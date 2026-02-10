@@ -24,13 +24,15 @@ app.post("/webhook", (req, res) => {
   const category = Array.isArray(params.category) ? params.category[0] : params.category;
 
   if (category === "Student") {
-    responseText = "You are a student or recent graduate. Charges: CV only MK6,000; Editable CV MK10,000; Cover letter MK5,000; Resume + Cover Letter MK8,000. Do you agree to proceed with these charges?";
-  } else if (category === "Professional") {
-    responseText = "You are a working professional. Charges: CV only MK8,000; Editable CV MK12,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
+    responseText = "You are a *student*.\n\n *Charges:*\n- CV only MK6,000;\n-  Editable CV MK10,000;\n-  Cover letter MK5,000;\n-  Resume + Cover Letter MK8,000.\n\n Do you agree to proceed with these charges?";
+  } else if (category === "recent graduate") {
+    responseText = "You are a *recent graduate*.\n\n *Charges:*\n- CV only MK7,000;\n-  Editable CV MK10,000;\n-  Cover letter MK5,000;\n-  Resume + Cover Letter MK9,000.\n\n Do you agree to proceed with these charges?";
+  }else if (category === "Professional") {
+    responseText = "You are a *working professional*.\n\n *Charges*:\n-  CV only MK8,000;\n-  Editable CV MK12,000;\n-  Cover letter MK7,000;\n-  Resume + Cover Letter MK10,000;\n-  Editable Resume + Cover Letter MK12,000.\n\nDo you agree to proceed with these charges?";
   } else if (category === "Non-Working Professional") {
-    responseText = "You are a non-working professional. Charges: CV only MK8,000; Editable CV MK10,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
+    responseText = "You are a *non-working professional*.\n\n *Charges*:\n-  CV only MK8,000;\n-  Editable CV MK10,000;\n-  Cover letter MK7,000;\n-  Resume + Cover Letter MK10,000;\n-  Editable Resume + Cover Letter MK12,000.\n\nDo you agree to proceed with these charges?";
   } else if (category === "Returning Client") {
-    responseText = "Welcome back, you are a returning client. Charges: Minor CV updates MK3,000; Major revisions MK6,000; Cover letter MK5,000; CV + Cover Letter update package MK7,000. Do you agree to proceed with these charges?";
+    responseText = "Welcome back, you are a returning client.\n\n  *Charges*: Minor CV updates MK3,000;\n-  Major revisions MK6,000;\n-  Cover letter MK5,000;\n-  CV + Cover Letter update package MK7,000.\n\nDo you agree to proceed with these charges?";
   } else {
     responseText = "Please select a valid category.";
   }
@@ -38,9 +40,9 @@ app.post("/webhook", (req, res) => {
 
 case "cv_payment_agreement":
   if (params.agreement === "Agree") {
-    responseText = "Thank you for agreeing to the charges. Let's move to service selection.";
+    responseText = "Thank you for agreeing to the charges.\n\nLets continue to Service selection.\n\nTell me which service you would like:\n- New CV Creation\n- Cover Letter/Application Letter\n- Both CV & Coverletter\n- CV Update";
   } else if (params.agreement === "Disagree") {
-    responseText = "We understand you don’t agree to the charges. Unfortunately, we cannot proceed further. Thank you for considering EasySuccor.";
+    responseText = "We understand you don’t agree to the charges. Unfortunately, we cannot proceed further.\nThank you for considering EasySuccor.";
   } else {
     responseText = "Please confirm whether you agree to the charges.";
     outputContexts.push({ name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 });
@@ -52,16 +54,16 @@ case "cv_payment_agreement":
   case "CV_PaymentMethod":
     switch (params.paymentMethod) {
       case "Airtel Money":
-        responseText = "You are paying through Airtel Money. Withdraw using this code: 1127102 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        responseText = "You are paying through Airtel Money.\nWithdraw using this code: *1127102* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
         break;
       case "Mo626":
-        responseText = "You are paying through Mo626. Send payment to account: 1005653618 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        responseText = "You are paying through Mo626.\nSend payment to account: *1005653618* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
         break;
       case "Mpamba":
-        responseText = "You are paying through Mpamba. Please send payment to wallet: +265881193707 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        responseText = "You are paying through TNM Mpamba.\nSend payment to wallet: *+265881193707* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
         break;
       case "Pay Later":
-        responseText = "You will pay later. Your CV/cover letter will be sent once payment is confirmed.";
+        responseText = "You will pay later.\nYour document will be sent once payment is confirmed.";
         break;
       default:
         responseText = "Please choose Airtel Money, Mo626, Mpamba, or Pay Later.";
@@ -71,7 +73,7 @@ case "cv_payment_agreement":
 
     // 3. Service Selection
     case "CV_ServiceSelection":
-      responseText = `Service chosen: ${params.serviceType}. Let's move to personal information.`;
+      responseText = `Service chosen: ${params.serviceType}.\nLet's move to personal information.`;
       break;
 
     // 4. Personal Info
@@ -166,14 +168,14 @@ case "cv_payment_agreement":
   case "CV_Update":
     if (params.category === "Returning Client") {
       if (params.updateField && params.updateValue) {
-        responseText = `Update applied: ${params.updateField} changed to ${params.updateValue}. Do you have another update to make?`;
+        responseText = `Update applied: ${params.updateField} changed to ${params.updateValue}.\nDo you have another update to make?`;
         outputContexts.push({ name: `${session}/contexts/update_loop`, lifespanCount: 1 });
       } else {
-        responseText = "Please specify which section you want to update and the new value.";
+        responseText = "Specify which section you want to update.";
         outputContexts.push({ name: `${session}/contexts/awaiting_update_info`, lifespanCount: 1 });
       }
     } else {
-      responseText = "CV updates are only available for returning clients whose CV was crafted by EasySuccor. For new clients, we’ll create a fresh CV instead.";
+      responseText = "CV updates are only available for returning clients whose CV was crafted by EasySuccor.\nFor new clients, we’ll create a fresh CV instead.";
     }
     break;
 
@@ -181,11 +183,11 @@ case "cv_payment_agreement":
       // 11. Cover Letter Vacancy (mandatory position + company, text/URL preferred, WhatsApp fallback)
    case "Cover_Letter":
      if (!params.positionApplied || !params.companyApplied) {
-       responseText = "Please provide both the position you are applying for and the company name.";
+       responseText = "Provide both the position you are applying for and the company name.";
        outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
   } else if (!params.vacancyDetails) {
     // If vacancy details are missing, ask for text or URL
-    responseText = "Please paste the vacancy details here as text or share the vacancy URL. If the details are in image form like screenshot, you may send them to our WhatsApp number: +256881193707.";
+    responseText = "Please paste the vacancy details here as text or share the vacancy URL.\nIf the details are in image form like screenshot, you may send them to our WhatsApp number: +256881193707.";
     outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
   } else {
     // Capture cover letter details
@@ -198,10 +200,10 @@ case "cv_payment_agreement":
      // 12. Payment Proof
   case "CV_PaymentProof":
     if (!params.paymentProof) {
-      responseText = "Please provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
+      responseText = "Provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
       outputContexts.push({ name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 1 });
     } else {
-      responseText = `Payment proof received: ${params.paymentProof}. Thank you! Please also send a screenshot to WhatsApp +265881193707 for verification. Your CV/cover letter process will now begin.`;
+      responseText = `Payment proof received: ${params.paymentProof}.\nThank you! Please also send a screenshot to WhatsApp +265881193707 for verification. Your CV/cover letter process will now begin.`;
       outputContexts = []; // end flow
     }
     break;
