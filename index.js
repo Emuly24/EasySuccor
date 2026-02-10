@@ -34,14 +34,26 @@ app.post("/webhook", (req, res) => {
       }
       break;
 
-    // 2. Payment Agreement
-    case "CV_PaymentAgreement":
-      if (params.agreement === "Agree") {
-        responseText = "Thank you for agreeing to the charges. Let's move to service selection.";
-      } else {
-        responseText = "We understand you don’t agree to the charges. Unfortunately, we cannot proceed further. Thank you for considering EasySuccor.";
-      }
-      break;
+  // 2. Payment Method
+  case "CV_PaymentMethod":
+    switch (params.paymentMethod) {
+      case "Airtel Money":
+        responseText = "You are paying through Airtel Money. Withdraw using this code: 1127102 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        break;
+      case "Mo626":
+        responseText = "You are paying through Mo626. Send payment to account: 1005653618 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        break;
+      case "Mpamba":
+        responseText = "You are paying through Mpamba. Please send payment to wallet: +265881193707 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
+        break;
+      case "Pay Later":
+        responseText = "You will pay later. Your CV/cover letter will be sent once payment is confirmed.";
+        break;
+      default:
+        responseText = "Please choose Airtel Money, Mo626, Mpamba, or Pay Later.";
+        outputContexts.push({ name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 });
+    }
+    break;
 
     // 3. Service Selection
     case "CV_ServiceSelection":
@@ -136,20 +148,27 @@ app.post("/webhook", (req, res) => {
       }
       break;
 
-    // 10. Updates (restricted to Returning Clients)
-    case "CV_Update":
-      if (params.category === "Returning Client") {
-        responseText = `Update applied: ${params.updateField} changed to ${params.updateValue}.`;
+    // 10. CV Update (restricted to Returning Clients)
+  case "CV_Update":
+    if (params.category === "Returning Client") {
+      if (params.updateField && params.updateValue) {
+        responseText = `Update applied: ${params.updateField} changed to ${params.updateValue}. Do you have another update to make?`;
+        outputContexts.push({ name: `${session}/contexts/update_loop`, lifespanCount: 1 });
       } else {
-        responseText = "CV updates are only available for returning clients whose CV was crafted by EasySuccor. For new clients, we’ll create a fresh CV instead.";
+        responseText = "Please specify which section you want to update and the new value.";
+        outputContexts.push({ name: `${session}/contexts/awaiting_update_info`, lifespanCount: 1 });
       }
-      break;
+    } else {
+      responseText = "CV updates are only available for returning clients whose CV was crafted by EasySuccor. For new clients, we’ll create a fresh CV instead.";
+    }
+    break;
 
-    // 11. Cover Letter Vacancy (mandatory position + company, text/URL preferred, WhatsApp fallback)
-case "Cover_Letter":
-  if (!params.positionApplied || !params.companyApplied) {
-    responseText = "Please provide both the position you are applying for and the company name.";
-    outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
+
+      // 11. Cover Letter Vacancy (mandatory position + company, text/URL preferred, WhatsApp fallback)
+   case "Cover_Letter":
+     if (!params.positionApplied || !params.companyApplied) {
+       responseText = "Please provide both the position you are applying for and the company name.";
+       outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
   } else if (!params.vacancyDetails) {
     // If vacancy details are missing, ask for text or URL
     responseText = "Please paste the vacancy details here as text or share the vacancy URL. If the details are in image form like screenshot, you may send them to our WhatsApp number: +256881193707.";
@@ -161,6 +180,7 @@ case "Cover_Letter":
   }
   break;
 
+    // 12. CV_PaymentMethod
 case "CV_PaymentMethod":
   switch (params.paymentMethod) {
     case "Airtel Money":
@@ -181,15 +201,16 @@ case "CV_PaymentMethod":
   }
   break;
 
-case "CV_PaymentProof":
-  if (!params.paymentProof) {
-    responseText = "Please provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
-    outputContexts.push({ name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 1 });
-  } else {
-    responseText = `Payment proof received: ${params.paymentProof}. Thank you! Please also send a screenshot to WhatsApp +265881193707 for verification. Your CV/cover letter process will now begin.`;
-    outputContexts = []; // end flow
-  }
-  break;
+     // 13. Payment Proof
+  case "CV_PaymentProof":
+    if (!params.paymentProof) {
+      responseText = "Please provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
+      outputContexts.push({ name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 1 });
+    } else {
+      responseText = `Payment proof received: ${params.paymentProof}. Thank you! Please also send a screenshot to WhatsApp +265881193707 for verification. Your CV/cover letter process will now begin.`;
+      outputContexts = []; // end flow
+    }
+    break;
 
  default:
         responseText = "Sorry, I didn’t understand that intent.";
