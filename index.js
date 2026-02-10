@@ -37,7 +37,7 @@ function getVariant(intentType, params = {}) {
     "- Non-Working Professional",
     "- Returning Client"
   ]
-],
+
 
 	 
     serviceSelection: [
@@ -240,7 +240,7 @@ app.post("/webhook", (req, res) => {
   
 // 0. Greeting → Category selection
     switch (intent) {
-  case "Greeting":
+ case "Greeting":
   const greetingLines = getVariant("greeting", params); // returns an array of strings
   const responseGreeting = {
     fulfillmentMessages: greetingLines.map(line => ({ text: { text: [line] } })),
