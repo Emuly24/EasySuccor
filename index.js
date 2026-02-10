@@ -240,9 +240,9 @@ app.post("/webhook", (req, res) => {
     console.log("Intent:", intent);
     console.log("Params:", params);
     console.log("Incoming contexts:", queryResult.outputContexts);
-
+  
+// 0. Greeting → Category selection
     switch (intent) {
-  // 0. Greeting → Category selection
   case "Greeting":
   const responseGreeting = {
     fulfillmentMessages: [
@@ -252,8 +252,8 @@ app.post("/webhook", (req, res) => {
       { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 1 }
     ]
   };
-  console.log("Response being sent:", JSON.stringify(responseGreeting, null, 2));
   return res.json(responseGreeting);
+
 
       // 1. CV Category → Payment Agreement
       case "cv_category":
