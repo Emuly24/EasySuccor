@@ -208,86 +208,87 @@ app.post("/webhook", (req, res) => {
     switch (intent) {
       // 1. CV Category → Payment Agreement
       case "cv_category":
-        const category = Array.isArray(params.category) ? params.category[0] : params.category;
-        let messages = [];
+  const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
+  const category = categoryRaw ? categoryRaw.toLowerCase() : "";
+  let messages = [];
 
-        switch (category) {
-          case "Student":
-            messages = [
-              { text: { text: ["You are a Student."] } },
-              { text: { text: ["Charges:"] } },
-              { text: { text: ["- CV only: MK6,000"] } },
-              { text: { text: ["- Editable CV: MK10,000"] } },
-              { text: { text: ["- Cover letter: MK5,000"] } },
-              { text: { text: ["- Resume + Cover Letter: MK8,000"] } },
-              { text: { text: ["Do you agree to proceed with these charges?"] } }
-            ];
-            break;
+  switch (category) {
+    case "student":
+      messages = [
+        { text: { text: ["You are a Student."] } },
+        { text: { text: ["Charges:"] } },
+        { text: { text: ["- CV only: MK6,000"] } },
+        { text: { text: ["- Editable CV: MK10,000"] } },
+        { text: { text: ["- Cover letter: MK5,000"] } },
+        { text: { text: ["- Resume + Cover Letter: MK8,000"] } },
+        { text: { text: ["Do you agree to proceed with these charges?"] } }
+      ];
+      break;
 
-          case "recent graduate":
-            messages = [
-              { text: { text: ["You are a recent graduate."] } },
-              { text: { text: ["Charges:"] } },
-              { text: { text: ["- CV only: MK7,000"] } },
-              { text: { text: ["- Editable CV: MK10,000"] } },
-              { text: { text: ["- Cover letter: MK5,000"] } },
-              { text: { text: ["- Resume + Cover Letter: MK9,000"] } },
-              { text: { text: ["Do you agree to proceed with these charges?"] } }
-            ];
-            break;
+    case "recent graduate":
+      messages = [
+        { text: { text: ["You are a recent graduate."] } },
+        { text: { text: ["Charges:"] } },
+        { text: { text: ["- CV only: MK7,000"] } },
+        { text: { text: ["- Editable CV: MK10,000"] } },
+        { text: { text: ["- Cover letter: MK5,000"] } },
+        { text: { text: ["- Resume + Cover Letter: MK9,000"] } },
+        { text: { text: ["Do you agree to proceed with these charges?"] } }
+      ];
+      break;
 
-          case "Professional":
-            messages = [
-              { text: { text: ["You are a working professional."] } },
-              { text: { text: ["Charges:"] } },
-              { text: { text: ["- CV only: MK8,000"] } },
-              { text: { text: ["- Editable CV: MK12,000"] } },
-              { text: { text: ["- Cover letter: MK7,000"] } },
-              { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
-              { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
-              { text: { text: ["Do you agree to proceed with these charges?"] } }
-            ];
-            break;
+    case "professional":
+      messages = [
+        { text: { text: ["You are a working professional."] } },
+        { text: { text: ["Charges:"] } },
+        { text: { text: ["- CV only: MK8,000"] } },
+        { text: { text: ["- Editable CV: MK12,000"] } },
+        { text: { text: ["- Cover letter: MK7,000"] } },
+        { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
+        { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
+        { text: { text: ["Do you agree to proceed with these charges?"] } }
+      ];
+      break;
 
-          case "Non-Working Professional":
-            messages = [
-              { text: { text: ["You are a non-working professional."] } },
-              { text: { text: ["Charges:"] } },
-              { text: { text: ["- CV only: MK8,000"] } },
-              { text: { text: ["- Editable CV: MK10,000"] } },
-              { text: { text: ["- Cover letter: MK7,000"] } },
-              { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
-              { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
-              { text: { text: ["Do you agree to proceed with these charges?"] } }
-            ];
-            break;
+    case "non-working professional":
+      messages = [
+        { text: { text: ["You are a non-working professional."] } },
+        { text: { text: ["Charges:"] } },
+        { text: { text: ["- CV only: MK8,000"] } },
+        { text: { text: ["- Editable CV: MK10,000"] } },
+        { text: { text: ["- Cover letter: MK7,000"] } },
+        { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
+        { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
+        { text: { text: ["Do you agree to proceed with these charges?"] } }
+      ];
+      break;
 
-          case "Returning Client":
-            messages = [
-              { text: { text: ["Welcome back, you are a returning client."] } },
-              { text: { text: ["Charges:"] } },
-              { text: { text: ["- Minor CV updates: MK3,000"] } },
-              { text: { text: ["- Major revisions: MK6,000"] } },
-              { text: { text: ["- Cover letter: MK5,000"] } },
-              { text: { text: ["- CV + Cover Letter update package: MK7,000"] } },
-              { text: { text: ["Do you agree to proceed with these charges?"] } }
-            ];
-            break;
+    case "returning client":
+      messages = [
+        { text: { text: ["Welcome back, you are a returning client."] } },
+        { text: { text: ["Charges:"] } },
+        { text: { text: ["- Minor CV updates: MK3,000"] } },
+        { text: { text: ["- Major revisions: MK6,000"] } },
+        { text: { text: ["- Cover letter: MK5,000"] } },
+        { text: { text: ["- CV + Cover Letter update package: MK7,000"] } },
+        { text: { text: ["Do you agree to proceed with these charges?"] } }
+      ];
+      break;
 
-          default:
-            messages = [
-              { text: { text: ["Please select a valid category."] } }
-            ];
-        }
+    default:
+      messages = [
+        { text: { text: ["Please select a valid category."] } }
+      ];
+  }
 
-        const responseCategory = {
-          fulfillmentMessages: messages,
-          outputContexts: [
-            { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
-          ]
-        };
-        console.log("Response being sent:", JSON.stringify(responseCategory, null, 2));
-        return res.json(responseCategory);
+  const responseCategory = {
+    fulfillmentMessages: messages,
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+    ]
+  };
+  console.log("Response being sent:", JSON.stringify(responseCategory, null, 2));
+  return res.json(responseCategory);
 		
         // 2. Payment Agreement → Service Selection
       case "cv_payment_agreement":
