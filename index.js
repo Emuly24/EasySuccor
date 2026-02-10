@@ -322,34 +322,48 @@ app.post("/webhook", (req, res) => {
         }
 
       // 3. Service Selection → Personal Info
-      case "CV_ServiceSelection":
-        const responseServiceSelection = {
-          fulfillmentMessages: [
-            { text: { text: [getVariant("serviceSelection", params)] } },
-            { text: { text: ["Let’s move to personal information."] } },
-            { text: { text: ["Please provide your first name, phone number, and email address."] } }
-          ],
-          outputContexts: [
-            { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 1 }
-          ]
-        };
-        console.log("Response being sent:", JSON.stringify(responseServiceSelection, null, 2));
-        return res.json(responseServiceSelection);
+     case "CV_ServiceSelection":
+  const responseServiceSelection = {
+    fulfillmentMessages: [
+      { text: { text: [getVariant("serviceSelection", params)] } },
+      { text: { text: ["Let’s move to your personal information."] } },
+      { text: { text: ["Enter your first name to begin."] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 1 }
+    ]
+  };
+  console.log("Response being sent:", JSON.stringify(responseServiceSelection, null, 2));
+  return res.json(responseServiceSelection);
+
 
       // 4. Personal Info → Education
-      case "CV_PersonalInfo":
-        const responsePersonalInfo = {
-          fulfillmentMessages: [
-            { text: { text: [getVariant("personalInfo", params)] } },
-            { text: { text: ["Now let’s move to your education details."] } },
-            { text: { text: ["Please provide your highest qualification, institution name, and graduation year."] } }
-          ],
-          outputContexts: [
-            { name: `${session}/contexts/awaiting_education_info`, lifespanCount: 1 }
-          ]
-        };
-        console.log("Response being sent:", JSON.stringify(responsePersonalInfo, null, 2));
-        return res.json(responsePersonalInfo);
+     case "CV_PersonalInfo":
+  if (!params.firstName) {
+    const responseMissingFirstName = {
+      fulfillmentMessages: [
+        { text: { text: ["Enter your first name to continue."] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 1 }
+      ]
+    };
+    return res.json(responseMissingFirstName);
+  }
+
+  const responsePersonalInfo = {
+    fulfillmentMessages: [
+      { text: { text: [getVariant("personalInfo", params)] } },
+      { text: { text: ["Now let’s move to your education details."] } },
+      { text: { text: ["What is your highest qualification?"] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_qualification`, lifespanCount: 1 }
+    ]
+  };
+  return res.json(responsePersonalInfo);
+
+
 
       // 5. Education Info → Loop
       case "CV_EducationInfo":
