@@ -8,36 +8,37 @@ app.use(bodyParser.json());
 function getVariant(intentType, params = {}) {
   const variants = {
     greeting: [
-      [
-        "Welcome to EasySuccor — your trusted partner in shaping your first impression.",
-        "Please tell me your category:",
-        "- Student",
-        "- Recent Graduate",
-        "- Professional",
-        "- Non-Working Professional",
-        "- Returning Client"
-      ],
-      [
-        "Hello and welcome to EasySuccor!",
-        "We’re here to help you craft a professional CV or application letter.",
-        "Choose your category:",
-        "- Student",
-        "- Recent Graduate",
-        "- Professional",
-        "- Non-Working Professional",
-        "- Returning Client"
-      ],
-      [
-        "Greetings from EasySuccor!",
-        "Let’s get started on building your CV or application letter.",
-        "Which category best describes you?",
-        "- Student",
-        "- Recent Graduate",
-        "- Professional",
-        "- Non-Working Professional",
-        "- Returning Client"
-	  ]
-      ],
+  [
+    "Welcome to EasySuccor — your trusted partner in shaping your first impression.",
+    "Please tell me your category:",
+    "- Student",
+    "- Recent Graduate",
+    "- Professional",
+    "- Non-Working Professional",
+    "- Returning Client"
+  ],
+  [
+    "Hello and welcome to EasySuccor!",
+    "We’re here to help you craft a professional CV or application letter.",
+    "Choose your category:",
+    "- Student",
+    "- Recent Graduate",
+    "- Professional",
+    "- Non-Working Professional",
+    "- Returning Client"
+  ],
+  [
+    "Greetings from EasySuccor!",
+    "Let’s get started on building your CV or application letter.",
+    "Which category best describes you?",
+    "- Student",
+    "- Recent Graduate",
+    "- Professional",
+    "- Non-Working Professional",
+    "- Returning Client"
+  ]
+],
+
 	 
     serviceSelection: [
       `Great, you’ve chosen: ${params.serviceType}.`,
@@ -240,16 +241,15 @@ app.post("/webhook", (req, res) => {
 // 0. Greeting → Category selection
     switch (intent) {
   case "Greeting":
+  const greetingLines = getVariant("greeting", params); // returns an array of strings
   const responseGreeting = {
-    fulfillmentMessages: [
-      { text: { text: [getVariant("greeting", params)] } }
-    ],
+    fulfillmentMessages: greetingLines.map(line => ({ text: { text: [line] } })),
     outputContexts: [
       { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 1 }
     ]
   };
+  console.log("Response being sent:", JSON.stringify(responseGreeting, null, 2));
   return res.json(responseGreeting);
-
 
       // 1. CV Category → Payment Agreement
       case "cv_category":
