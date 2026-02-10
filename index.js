@@ -2,16 +2,22 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // ✅ parse JSON body
 
 app.post("/webhook", (req, res) => {
-  const intent = req.body.queryResult.intent.displayName;
-  const params = req.body.queryResult.parameters || {};
-  const session = req.body.session || "default";
+  try {
+    // Safe checks to avoid crashes
+    const queryResult = req.body.queryResult || {};
+    const intent = queryResult.intent?.displayName || "unknown";
+    const params = queryResult.parameters || {};
+    const session = req.body.session || "default";
 
-  let responseText = "";
-  let outputContexts = [];
+    console.log("Webhook triggered. Intent:", intent, "Params:", params);
 
+    let responseText = "";
+    let outputContexts = [];
+
+   
   switch (intent) {
     // 1. Category → Show charges
     case "CV_Category":
@@ -185,18 +191,23 @@ case "CV_PaymentProof":
   }
   break;
 
+ default:
+        responseText = "Sorry, I didn’t understand that intent.";
+    }
 
+    // ✅ Always return JSON
+    return res.json({
+      fulfillmentText: responseText,
+      outputContexts: outputContexts
+    });
 
-    default:
-      responseText = "Sorry, I didn’t understand that intent.";
+  } catch (error) {
+    console.error("Webhook error:", error);
+    return res.status(500).json({ fulfillmentText: "Internal Server Error" });
   }
-
-  res.json({
-    fulfillmentText: responseText,
-    outputContexts: outputContexts
-  });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Webhook running");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Webhook running on port ${PORT}`);
 });
