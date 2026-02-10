@@ -36,6 +36,17 @@ app.post("/webhook", (req, res) => {
   }
   break;
 
+case "cv_payment_agreement":
+  if (params.agreement === "Agree") {
+    responseText = "Thank you for agreeing to the charges. Let's move to service selection.";
+  } else if (params.agreement === "Disagree") {
+    responseText = "We understand you don’t agree to the charges. Unfortunately, we cannot proceed further. Thank you for considering EasySuccor.";
+  } else {
+    responseText = "Please confirm whether you agree to the charges.";
+    outputContexts.push({ name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 });
+  }
+  break;
+
 
   // 2. Payment Method
   case "CV_PaymentMethod":
@@ -183,28 +194,8 @@ app.post("/webhook", (req, res) => {
   }
   break;
 
-    // 12. CV_PaymentMethod
-case "CV_PaymentMethod":
-  switch (params.paymentMethod) {
-    case "Airtel Money":
-      responseText = "You are paying through Airtel Money. Withdraw using this code: 1127102 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
-      break;
-    case "Mo626":
-      responseText = "You are paying through Mo626. Send payment to account: 1005653618 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
-      break;
-    case "Mpamba":
-      responseText = "You are paying through Mpamba. Please send payment to wallet: +265881193707 under the name Blessings Emulyn. Once done, send a screenshot of proof of payment to WhatsApp +265881193707.";
-      break;
-    case "Pay Later":
-      responseText = "You will pay later. Your CV/cover letter will be send once payment is confirmed.";
-      break;
-    default:
-      responseText = "Please choose Airtel Money, Mo626, Mpamba, or Pay Later.";
-      outputContexts.push({ name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 });
-  }
-  break;
-
-     // 13. Payment Proof
+    
+     // 12. Payment Proof
   case "CV_PaymentProof":
     if (!params.paymentProof) {
       responseText = "Please provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
@@ -216,7 +207,7 @@ case "CV_PaymentMethod":
     break;
 
  default:
-        responseText = "Sorry, I didn’t understand that intent.";
+        responseText = "Sorry, I didn’t get that.";
     }
 
     // ✅ Always return JSON
