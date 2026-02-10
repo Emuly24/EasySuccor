@@ -2,225 +2,549 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
-app.use(bodyParser.json()); // ✅ parse JSON body
+app.use(bodyParser.json());
 
+// Helper function to pick a random variant
+function getVariant(intentType, params = {}) {
+  const variants = {
+    serviceSelection: [
+      `Great, you’ve chosen: ${params.serviceType}.`,
+      `Alright, your selected service is ${params.serviceType}.`,
+      `Got it, you’d like ${params.serviceType}.`,
+      `You’re going ahead with ${params.serviceType}.`
+    ],
+    personalInfo: [
+      `I’ve noted your personal details: Name ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`,
+      `So far, you’ve shared: Name ${params.firstName} ${params.lastName}, Contact ${params.phoneNumber}, Email ${params.email}.`,
+      `Your personal information is: ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`,
+      `Okay, I’ve recorded your details: Name ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`
+    ],
+    educationInfo: {
+      "Completed": [
+        `Your qualification is ${params.qualification} in ${params.fieldOfStudy}, completed at ${params.institutionName}.`,
+        `You graduated with ${params.qualification} in ${params.fieldOfStudy} from ${params.institutionName}.`,
+        `I’ve noted your completed studies: ${params.qualification}, Field: ${params.fieldOfStudy}.`,
+        `So far, your education includes ${params.qualification} in ${params.fieldOfStudy}, Graduation: ${params.graduationDate}.`
+      ],
+      "Ongoing": [
+        `You’re currently pursuing ${params.qualification} in ${params.fieldOfStudy} at ${params.institutionName}.`,
+        `I’ve noted your ongoing studies: ${params.qualification}, Field: ${params.fieldOfStudy}.`,
+        `Your current education is ${params.qualification} in ${params.fieldOfStudy}, expected graduation: ${params.estimatedGraduationDate}.`,
+        `So far, you’re studying ${params.qualification} at ${params.institutionName}.`
+      ]
+    },
+    employmentInfo: {
+      "Current": [
+        `You are currently working as ${params.jobTitle} at ${params.companyName}.`,
+        `Your present role is ${params.jobTitle} with ${params.companyName}.`,
+        `I’ve noted your current employment: ${params.jobTitle}, Company: ${params.companyName}.`,
+        `So far, you’re employed as ${params.jobTitle} at ${params.companyName}.`
+      ],
+      "Past": [
+        `You previously worked as ${params.jobTitle} at ${params.companyName}.`,
+        `Your past role was ${params.jobTitle} with ${params.companyName}.`,
+        `I’ve recorded your former employment: ${params.jobTitle}, Company: ${params.companyName}.`,
+        `So far, your work history includes ${params.jobTitle} at ${params.companyName}.`
+      ]
+    },
+    certificationInfo: [
+      `Certification recorded: ${params.certificateName}, issued by ${params.issuingOrganization}.`,
+      `You’ve completed ${params.certificateName} from ${params.issuingOrganization}.`,
+      `I’ve noted your certification: ${params.certificateName}, Date: ${params.completionDate || "N/A"}.`,
+      `Your certification details are: ${params.certificateName}, Organization: ${params.issuingOrganization}.`
+    ],
+    refereeInfo: [
+      `Referee added: ${params.refereeName}, Position: ${params.refereePosition || "N/A"}, Email: ${params.refereeEmail}.`,
+      `I’ve noted your referee: ${params.refereeName}, Company: ${params.refereeCompany || "N/A"}, Email: ${params.refereeEmail}.`,
+      `Your referee details are: ${params.refereeName}, Position: ${params.refereePosition || "N/A"}, Email: ${params.refereeEmail}.`,
+      `So far, you’ve shared referee: ${params.refereeName}, Contact: ${params.refereeEmail}.`
+    ],
+    languageInfo: {
+      "Fluent": [
+        `You speak ${params.language} fluently.`,
+        `I’ve noted your fluent language skill: ${params.language}.`,
+        `Your language proficiency is fluent in ${params.language}.`,
+        `So far, you’ve shared ${params.language} at fluent level.`
+      ],
+      "Intermediate": [
+        `You speak ${params.language} at intermediate level.`,
+        `I’ve noted your intermediate skill in ${params.language}.`,
+        `Your language proficiency is intermediate in ${params.language}.`,
+        `So far, you’ve shared ${params.language} at intermediate level.`
+      ],
+      "Basic": [
+        `You speak ${params.language} at basic level.`,
+        `I’ve noted your basic skill in ${params.language}.`,
+        `Your language proficiency is basic in ${params.language}.`,
+        `So far, you’ve shared ${params.language} at basic level.`
+      ]
+    },
+    paymentMethod: {
+      "Airtel Money": [
+        `You’ve chosen Airtel Money as your payment option.`,
+        `Alright, you’ll be paying via Airtel Money.`,
+        `Got it, Airtel Money is your selected method.`,
+        `I’ve noted Airtel Money as your payment choice.`
+      ],
+      "Mo626": [
+        `You’ve selected Mo626 for your payment.`,
+        `Okay, you’ll be settling the payment through Mo626.`,
+        `Got it, Mo626 is your chosen payment method.`,
+        `I’ve recorded Mo626 as your payment option.`
+      ],
+      "Mpamba": [
+        `You’ve chosen TNM Mpamba as your payment option.`,
+        `Alright, you’ll be paying via Mpamba.`,
+        `Got it, Mpamba is your selected method.`,
+        `I’ve noted Mpamba as your payment choice.`
+      ],
+      "Pay Later": [
+        `You’ve opted to pay later.`,
+        `Alright, you’ll complete the payment at a later stage.`,
+        `Got it, you’ve selected the Pay Later option.`,
+        `I’ve recorded Pay Later as your payment choice.`
+      ]
+    },
+    paymentProof: [
+      `Payment proof received: ${params.paymentProof}.`,
+      `I’ve noted your payment confirmation: ${params.paymentProof}.`,
+      `Your payment details are: ${params.paymentProof}.`,
+      `Alright, I’ve recorded your proof of payment: ${params.paymentProof}.`
+    ],
+    coverLetter: [
+      `Cover letter vacancy captured: Position ${params.positionApplied}, Company ${params.companyApplied}.`,
+      `I’ve noted your application: ${params.positionApplied} at ${params.companyApplied}.`,
+      `Your cover letter details are: Position ${params.positionApplied}, Company ${params.companyApplied}.`,
+      `So far, you’re applying for ${params.positionApplied} at ${params.companyApplied}.`
+    ],
+    cvUpdateReturning: [
+      `Welcome back! Your update has been applied: ${params.updateField} changed to ${params.updateValue}.`,
+      `Since you’re a returning client, I’ve updated your CV: ${params.updateField} → ${params.updateValue}.`,
+      `Glad to see you again — your CV update is noted: ${params.updateField} updated to ${params.updateValue}.`,
+      `As a returning client, your update has been recorded: ${params.updateField} set to ${params.updateValue}.`
+    ]
+  };
+
+  // Context-aware selection
+  if (intentType === "paymentMethod") {
+    const method = params.paymentMethod;
+    const options = variants.paymentMethod[method] || ["Please choose a valid payment method."];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "languageInfo") {
+    const proficiency = params.proficiency || "Basic";
+    const options = variants.languageInfo[proficiency] || variants.languageInfo["Basic"];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "educationInfo") {
+    const status = params.educationStatus || "Completed";
+    const options = variants.educationInfo[status] || variants.educationInfo["Completed"];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "employmentInfo") {
+    const status = params.employmentStatus || "Past";
+    const options = variants.employmentInfo[status] || variants.employmentInfo["Past"];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "personalInfo") {
+    const options = variants.personalInfo;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "certificationInfo") {
+    const options = variants.certificationInfo;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "refereeInfo") {
+    const options = variants.refereeInfo;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "paymentProof") {
+    const options = variants.paymentProof;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+   if (intentType === "coverLetter") {
+    const options = variants.coverLetter;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "cvUpdateReturning") {
+    const options = variants.cvUpdateReturning;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  if (intentType === "serviceSelection") {
+    const options = variants.serviceSelection;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  // fallback for simple arrays
+  const options = variants[intentType] || ["I’ve noted your details."];
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+// Webhook handler
 app.post("/webhook", (req, res) => {
   try {
-    // Safe checks to avoid crashes
     const queryResult = req.body.queryResult || {};
     const intent = queryResult.intent?.displayName || "unknown";
     const params = queryResult.parameters || {};
     const session = req.body.session || "default";
 
-    console.log("Webhook triggered. Intent:", intent, "Params:", params);
+    // Expanded logging
+    console.log(`[${new Date().toISOString()}] Webhook triggered`);
+    console.log("Session:", session);
+    console.log("Intent:", intent);
+    console.log("Params:", params);
+    console.log("Incoming contexts:", queryResult.outputContexts);
 
-    let responseText = "";
-    let outputContexts = [];
+    switch (intent) {
+      // 1. CV Category → Payment Agreement
+      case "cv_category":
+        const category = Array.isArray(params.category) ? params.category[0] : params.category;
+        let messages = [];
 
-   
-  switch (intent) {
-    // 1. Category → Show charges
-    case "cv_category":
-  const category = Array.isArray(params.category) ? params.category[0] : params.category;
+        switch (category) {
+          case "Student":
+            messages = [
+              { text: { text: ["You are a Student."] } },
+              { text: { text: ["Charges:"] } },
+              { text: { text: ["- CV only: MK6,000"] } },
+              { text: { text: ["- Editable CV: MK10,000"] } },
+              { text: { text: ["- Cover letter: MK5,000"] } },
+              { text: { text: ["- Resume + Cover Letter: MK8,000"] } },
+              { text: { text: ["Do you agree to proceed with these charges?"] } }
+            ];
+            break;
 
-  if (category === "Student") {
-    responseText = "You are a *student*.\n\n *Charges:*\n- CV only MK6,000;\n-  Editable CV MK10,000;\n-  Cover letter MK5,000;\n-  Resume + Cover Letter MK8,000.\n\n Do you agree to proceed with these charges?";
-  } else if (category === "recent graduate") {
-    responseText = "You are a *recent graduate*.\n\n *Charges:*\n- CV only MK7,000;\n-  Editable CV MK10,000;\n-  Cover letter MK5,000;\n-  Resume + Cover Letter MK9,000.\n\n Do you agree to proceed with these charges?";
-  }else if (category === "Professional") {
-    responseText = "You are a *working professional*.\n\n *Charges*:\n-  CV only MK8,000;\n-  Editable CV MK12,000;\n-  Cover letter MK7,000;\n-  Resume + Cover Letter MK10,000;\n-  Editable Resume + Cover Letter MK12,000.\n\nDo you agree to proceed with these charges?";
-  } else if (category === "Non-Working Professional") {
-    responseText = "You are a *non-working professional*.\n\n *Charges*:\n-  CV only MK8,000;\n-  Editable CV MK10,000;\n-  Cover letter MK7,000;\n-  Resume + Cover Letter MK10,000;\n-  Editable Resume + Cover Letter MK12,000.\n\nDo you agree to proceed with these charges?";
-  } else if (category === "Returning Client") {
-    responseText = "Welcome back, you are a returning client.\n\n  *Charges*: Minor CV updates MK3,000;\n-  Major revisions MK6,000;\n-  Cover letter MK5,000;\n-  CV + Cover Letter update package MK7,000.\n\nDo you agree to proceed with these charges?";
-  } else {
-    responseText = "Please select a valid category.";
-  }
-  break;
+          case "recent graduate":
+            messages = [
+              { text: { text: ["You are a recent graduate."] } },
+              { text: { text: ["Charges:"] } },
+              { text: { text: ["- CV only: MK7,000"] } },
+              { text: { text: ["- Editable CV: MK10,000"] } },
+              { text: { text: ["- Cover letter: MK5,000"] } },
+              { text: { text: ["- Resume + Cover Letter: MK9,000"] } },
+              { text: { text: ["Do you agree to proceed with these charges?"] } }
+            ];
+            break;
 
-case "cv_payment_agreement":
-  if (params.agreement === "Agree") {
-    responseText = "Thank you for agreeing to the charges.\n\nLets continue to Service selection.\n\nTell me which service you would like:\n- New CV Creation\n- Cover Letter/Application Letter\n- Both CV & Coverletter\n- CV Update";
-  } else if (params.agreement === "Disagree") {
-    responseText = "We understand you don’t agree to the charges. Unfortunately, we cannot proceed further.\nThank you for considering EasySuccor.";
-  } else {
-    responseText = "Please confirm whether you agree to the charges.";
-    outputContexts.push({ name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 });
-  }
-  break;
+          case "Professional":
+            messages = [
+              { text: { text: ["You are a working professional."] } },
+              { text: { text: ["Charges:"] } },
+              { text: { text: ["- CV only: MK8,000"] } },
+              { text: { text: ["- Editable CV: MK12,000"] } },
+              { text: { text: ["- Cover letter: MK7,000"] } },
+              { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
+              { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
+              { text: { text: ["Do you agree to proceed with these charges?"] } }
+            ];
+            break;
 
+          case "Non-Working Professional":
+            messages = [
+              { text: { text: ["You are a non-working professional."] } },
+              { text: { text: ["Charges:"] } },
+              { text: { text: ["- CV only: MK8,000"] } },
+              { text: { text: ["- Editable CV: MK10,000"] } },
+              { text: { text: ["- Cover letter: MK7,000"] } },
+              { text: { text: ["- Resume + Cover Letter: MK10,000"] } },
+              { text: { text: ["- Editable Resume + Cover Letter: MK12,000"] } },
+              { text: { text: ["Do you agree to proceed with these charges?"] } }
+            ];
+            break;
 
-  // 2. Payment Method
-  case "CV_PaymentMethod":
-    switch (params.paymentMethod) {
-      case "Airtel Money":
-        responseText = "You are paying through Airtel Money.\nWithdraw using this code: *1127102* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
-        break;
-      case "Mo626":
-        responseText = "You are paying through Mo626.\nSend payment to account: *1005653618* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
-        break;
-      case "Mpamba":
-        responseText = "You are paying through TNM Mpamba.\nSend payment to wallet: *+265881193707* under the name *Blessings Emulyn*.\nOnce done, send a screenshot of proof of payment to WhatsApp *+265881193707*.";
-        break;
-      case "Pay Later":
-        responseText = "You will pay later.\nYour document will be sent once payment is confirmed.";
-        break;
+          case "Returning Client":
+            messages = [
+              { text: { text: ["Welcome back, you are a returning client."] } },
+              { text: { text: ["Charges:"] } },
+              { text: { text: ["- Minor CV updates: MK3,000"] } },
+              { text: { text: ["- Major revisions: MK6,000"] } },
+              { text: { text: ["- Cover letter: MK5,000"] } },
+              { text: { text: ["- CV + Cover Letter update package: MK7,000"] } },
+              { text: { text: ["Do you agree to proceed with these charges?"] } }
+            ];
+            break;
+
+          default:
+            messages = [
+              { text: { text: ["Please select a valid category."] } }
+            ];
+        }
+
+        const responseCategory = {
+          fulfillmentMessages: messages,
+          outputContexts: [
+            { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseCategory, null, 2));
+        return res.json(responseCategory);
+		
+        // 2. Payment Agreement → Service Selection
+      case "cv_payment_agreement":
+        if (params.agreement === "Agree") {
+          const responseAgreement = {
+            fulfillmentMessages: [
+              { text: { text: ["Thank you for agreeing to the charges."] } },
+              { text: { text: ["Let’s continue to Service selection."] } },
+              { text: { text: ["Tell me which service you would like:"] } },
+              { text: { text: ["- New CV Creation"] } },
+              { text: { text: ["- Cover Letter/Application Letter"] } },
+              { text: { text: ["- Both CV & Cover Letter"] } },
+              { text: { text: ["- CV Update"] } }
+            ],
+            outputContexts: [
+              { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 1 }
+            ]
+          };
+          console.log("Response being sent:", JSON.stringify(responseAgreement, null, 2));
+          return res.json(responseAgreement);
+        } else {
+          const responseDisagree = {
+            fulfillmentMessages: [
+              { text: { text: ["We understand you don’t agree to the charges. Unfortunately, we cannot proceed further."] } },
+              { text: { text: ["Thank you for considering EasySuccor."] } }
+            ],
+            outputContexts: []
+          };
+          console.log("Response being sent:", JSON.stringify(responseDisagree, null, 2));
+          return res.json(responseDisagree);
+        }
+
+      // 3. Service Selection → Personal Info
+      case "CV_ServiceSelection":
+        const responseServiceSelection = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("serviceSelection", params)] } },
+            { text: { text: ["Let’s move to personal information."] } },
+            { text: { text: ["Please provide your first name, phone number, and email address."] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseServiceSelection, null, 2));
+        return res.json(responseServiceSelection);
+
+      // 4. Personal Info → Education
+      case "CV_PersonalInfo":
+        const responsePersonalInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("personalInfo", params)] } },
+            { text: { text: ["Now let’s move to your education details."] } },
+            { text: { text: ["Please provide your highest qualification, institution name, and graduation year."] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/awaiting_education_info`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responsePersonalInfo, null, 2));
+        return res.json(responsePersonalInfo);
+
+      // 5. Education Info → Loop
+      case "CV_EducationInfo":
+        const responseEducationInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("educationInfo", params)] } },
+            { text: { text: ["Would you like to add another education detail?"] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/education_loop`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseEducationInfo, null, 2));
+        return res.json(responseEducationInfo);
+
+      // 6. Certifications → Loop
+      case "CV_CertificationInfo":
+        const responseCertificationInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("certificationInfo", params)] } },
+            { text: { text: ["Would you like to add another certification?"] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/certification_loop`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseCertificationInfo, null, 2));
+        return res.json(responseCertificationInfo);
+
+      // 7. Employment → Loop
+      case "CV_EmploymentInfo":
+        const responseEmploymentInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("employmentInfo", params)] } },
+            { text: { text: ["Do you have another work experience to add?"] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/employment_loop`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseEmploymentInfo, null, 2));
+        return res.json(responseEmploymentInfo);
+
+      // 8. Referees → Loop
+      case "CV_RefereesInfo":
+        const responseRefereeInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("refereeInfo", params)] } },
+            { text: { text: ["Please add at least one more referee."] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/referee_loop`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseRefereeInfo, null, 2));
+        return res.json(responseRefereeInfo);
+
+      // 9. Languages → Loop
+      case "CV_LanguagesInfo":
+        const responseLanguageInfo = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("languageInfo", params)] } },
+            { text: { text: ["Would you like to add another language?"] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/language_loop`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responseLanguageInfo, null, 2));
+        return res.json(responseLanguageInfo);
+
+      // 10. Payment Method → Proof
+      case "CV_PaymentMethod":
+        const responsePaymentMethod = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("paymentMethod", params)] } },
+            { text: { text: ["Please upload or provide proof of payment (transaction ID or screenshot)."] } }
+          ],
+          outputContexts: [
+            { name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 1 }
+          ]
+        };
+        console.log("Response being sent:", JSON.stringify(responsePaymentMethod, null, 2));
+        return res.json(responsePaymentMethod);
+
+      // 11. Payment Proof → Completion
+      case "CV_PaymentProof":
+        const responsePaymentProof = {
+          fulfillmentMessages: [
+            { text: { text: [getVariant("paymentProof", params)] } },
+            { text: { text: ["Thank you! Please also send a screenshot to WhatsApp +265881193707 for verification."] } },
+            { text: { text: ["Your CV/cover letter process will now begin."] } }
+          ],
+          outputContexts: []
+        };
+        console.log("Response being sent:", JSON.stringify(responsePaymentProof, null, 2));
+        return res.json(responsePaymentProof);
+      // 12. Cover Letter → Loop
+      case "Cover_Letter":
+        if (!params.positionApplied || !params.companyApplied) {
+          const responseCoverMissing = {
+            fulfillmentMessages: [
+              { text: { text: ["Provide both the position you are applying for and the company name."] } }
+            ],
+            outputContexts: [
+              { name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 }
+            ]
+          };
+          console.log("Response being sent:", JSON.stringify(responseCoverMissing, null, 2));
+          return res.json(responseCoverMissing);
+        } else if (!params.vacancyDetails) {
+          const responseCoverDetails = {
+            fulfillmentMessages: [
+              { text: { text: ["Please paste the vacancy details here as text or share the vacancy URL."] } },
+              { text: { text: ["If the details are in image form like a screenshot, you may send them to our WhatsApp number: +265881193707."] } }
+            ],
+            outputContexts: [
+              { name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 }
+            ]
+          };
+          console.log("Response being sent:", JSON.stringify(responseCoverDetails, null, 2));
+          return res.json(responseCoverDetails);
+        } else {
+          const responseCoverLetter = {
+            fulfillmentMessages: [
+              { text: { text: [getVariant("coverLetter", params)] } },
+              { text: { text: [`Vacancy Details: ${params.vacancyDetails}`] } },
+              { text: { text: ["Would you like to add another vacancy detail or refine this cover letter?"] } }
+            ],
+            outputContexts: [
+              { name: `${session}/contexts/cover_letter_loop`, lifespanCount: 1 }
+            ]
+          };
+          console.log("Response being sent:", JSON.stringify(responseCoverLetter, null, 2));
+          return res.json(responseCoverLetter);
+        }
+
+      // 13. CV Update → Loop
+      case "CV_Update":
+        if (params.category === "Returning Client") {
+          if (params.updateField && params.updateValue) {
+            const responseUpdateReturning = {
+              fulfillmentMessages: [
+                { text: { text: [getVariant("cvUpdateReturning", params)] } },
+                { text: { text: ["Do you have another update to make?"] } }
+              ],
+              outputContexts: [
+                { name: `${session}/contexts/update_loop`, lifespanCount: 1 }
+              ]
+            };
+            console.log("Response being sent:", JSON.stringify(responseUpdateReturning, null, 2));
+            return res.json(responseUpdateReturning);
+          } else {
+            const responseUpdateMissing = {
+              fulfillmentMessages: [
+                { text: { text: ["Specify which section you want to update."] } }
+              ],
+              outputContexts: [
+                { name: `${session}/contexts/awaiting_update_info`, lifespanCount: 1 }
+              ]
+            };
+            console.log("Response being sent:", JSON.stringify(responseUpdateMissing, null, 2));
+            return res.json(responseUpdateMissing);
+          }
+        } else {
+          const responseUpdateNewClient = {
+            fulfillmentMessages: [
+              { text: { text: ["CV updates are only available for returning clients whose CV was crafted by EasySuccor."] } },
+              { text: { text: ["For new clients, we’ll create a fresh CV instead."] } }
+            ],
+            outputContexts: []
+          };
+          console.log("Response being sent:", JSON.stringify(responseUpdateNewClient, null, 2));
+          return res.json(responseUpdateNewClient);
+        }
+
+      // Default fallback
       default:
-        responseText = "Please choose Airtel Money, Mo626, Mpamba, or Pay Later.";
-        outputContexts.push({ name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 });
+        const responseFallback = {
+          fulfillmentMessages: [
+            { text: { text: ["Sorry, I didn’t get that. Could you please rephrase?"] } }
+          ],
+          outputContexts: []
+        };
+        console.log("Response being sent:", JSON.stringify(responseFallback, null, 2));
+        return res.json(responseFallback);
     }
-    break;
-
-    // 3. Service Selection
-    case "CV_ServiceSelection":
-      responseText = `Service chosen: ${params.serviceType}.\nLet's move to personal information.`;
-      break;
-
-    // 4. Personal Info
-    case "CV_PersonalInfo":
-      responseText = `Personal Info captured: ${params.firstName} ${params.middleName || ""} ${params.lastName}, Phone: ${params.phoneNumber}, Email: ${params.email}, Address: ${params.addressLine1}${params.addressLine2 ? ", " + params.addressLine2 : ""}, District: ${params.district}.`;
-      break;
-
-    // 5. Education (graduation date condition + looping)
-    case "CV_EducationInfo":
-      if (params.educationStatus === "Graduated" || params.educationStatus === "Awaiting Graduation Ceremony") {
-        if (!params.graduationDate && !params.estimatedGraduationDate) {
-          responseText = "Please provide your graduation or expected completion date.";
-          outputContexts.push({ name: `${session}/contexts/awaiting_education_info`, lifespanCount: 1 });
-        } else {
-          responseText = `Education captured: ${params.qualification} in ${params.fieldOfStudy} at ${params.institutionName}, ${params.institutionLocation}. Status: ${params.educationStatus}, Graduation: ${params.graduationDate || params.estimatedGraduationDate}. Do you have another education detail to add?`;
-          outputContexts.push({ name: `${session}/contexts/education_loop`, lifespanCount: 1 });
-        }
-      } else {
-        responseText = `Education captured: ${params.qualification} in ${params.fieldOfStudy} at ${params.institutionName}, ${params.institutionLocation}. Status: ${params.educationStatus}. Do you have another education detail to add?`;
-        outputContexts.push({ name: `${session}/contexts/education_loop`, lifespanCount: 1 });
-      }
-      break;
-
-    // 6. Certifications (looping)
-    case "CV_CertificationInfo":
-      responseText = `Certification captured: ${params.certificateName}, Issued by ${params.issuingOrganization}, Completed on ${params.completionDate || "N/A"}. Description: ${params.description || "N/A"}. Do you have another certification to add?`;
-      outputContexts.push({ name: `${session}/contexts/certification_loop`, lifespanCount: 1 });
-      break;
-
-    // 7. Employment (end date condition + looping)
-    case "CV_EmploymentInfo":
-      if (params.employmentStatus === "Currently Employed") {
-        responseText = `Employment captured: ${params.jobTitle} at ${params.companyName}, ${params.companyAddress1}${params.companyAddress2 ? ", " + params.companyAddress2 : ""}, ${params.country}. Responsibilities: ${params.responsibilities}. Status: ${params.employmentStatus}, Duration: ${params.startDate} to Present. Contributions: ${params.contributions || "N/A"}. Do you have another work experience to add?`;
-        outputContexts.push({ name: `${session}/contexts/employment_loop`, lifespanCount: 1 });
-      } else {
-        if (!params.endDate) {
-          responseText = "Please provide the end date of your employment.";
-          outputContexts.push({ name: `${session}/contexts/awaiting_employment_info`, lifespanCount: 1 });
-        } else {
-          responseText = `Employment captured: ${params.jobTitle} at ${params.companyName}, ${params.companyAddress1}${params.companyAddress2 ? ", " + params.companyAddress2 : ""}, ${params.country}. Responsibilities: ${params.responsibilities}. Status: ${params.employmentStatus}, Duration: ${params.startDate} to ${params.endDate}. Contributions: ${params.contributions || "N/A"}. Do you have another work experience to add?`;
-          outputContexts.push({ name: `${session}/contexts/employment_loop`, lifespanCount: 1 });
-        }
-      }
-      break;
-
-    // 8. Referees (minimum 2 required + looping)
-    case "CV_RefereesInfo":
-      if (!params.refereeName || !params.refereeEmail) {
-        responseText = "Please provide a referee with their name and email address.";
-        outputContexts.push({ name: `${session}/contexts/awaiting_referee_info`, lifespanCount: 1 });
-      } else {
-        responseText = `Referee captured: ${params.refereeName}, Position: ${params.refereePosition || "N/A"}, Company: ${params.refereeCompany || "N/A"}, Location: ${params.refereeLocation || "N/A"}, Email: ${params.refereeEmail}.`;
-
-        let refereeCount = 1;
-        const existingContext = req.body.queryResult.outputContexts.find(ctx => ctx.name.endsWith("/referee_count"));
-        if (existingContext && existingContext.parameters && existingContext.parameters.count) {
-          refereeCount = existingContext.parameters.count + 1;
-        }
-
-        if (refereeCount < 2) {
-          responseText += " Please add at least one more referee.";
-          outputContexts.push({
-            name: `${session}/contexts/referee_count`,
-            lifespanCount: 2,
-            parameters: { count: refereeCount }
-          });
-          outputContexts.push({ name: `${session}/contexts/awaiting_referee_info`, lifespanCount: 1 });
-        } else {
-          responseText += " Do you have another referee to add?";
-          outputContexts.push({
-            name: `${session}/contexts/referee_count`,
-            lifespanCount: 2,
-            parameters: { count: refereeCount }
-          });
-          outputContexts.push({ name: `${session}/contexts/referee_loop`, lifespanCount: 1 });
-        }
-      }
-      break;
-
-    // 9. Languages (language + proficiency required + looping)
-    case "CV_LanguagesInfo":
-      if (!params.language || !params.proficiency) {
-        responseText = "Please provide both the language and your proficiency level (e.g., Beginner, Intermediate, Advanced, Fluent).";
-        outputContexts.push({ name: `${session}/contexts/awaiting_language_info`, lifespanCount: 1 });
-      } else {
-        responseText = `Language captured: ${params.language}, Proficiency: ${params.proficiency}. Do you have another language to add?`;
-        outputContexts.push({ name: `${session}/contexts/language_loop`, lifespanCount: 1 });
-      }
-      break;
-
-    // 10. CV Update (restricted to Returning Clients)
-  case "CV_Update":
-    if (params.category === "Returning Client") {
-      if (params.updateField && params.updateValue) {
-        responseText = `Update applied: ${params.updateField} changed to ${params.updateValue}.\nDo you have another update to make?`;
-        outputContexts.push({ name: `${session}/contexts/update_loop`, lifespanCount: 1 });
-      } else {
-        responseText = "Specify which section you want to update.";
-        outputContexts.push({ name: `${session}/contexts/awaiting_update_info`, lifespanCount: 1 });
-      }
-    } else {
-      responseText = "CV updates are only available for returning clients whose CV was crafted by EasySuccor.\nFor new clients, we’ll create a fresh CV instead.";
-    }
-    break;
-
-
-      // 11. Cover Letter Vacancy (mandatory position + company, text/URL preferred, WhatsApp fallback)
-   case "Cover_Letter":
-     if (!params.positionApplied || !params.companyApplied) {
-       responseText = "Provide both the position you are applying for and the company name.";
-       outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
-  } else if (!params.vacancyDetails) {
-    // If vacancy details are missing, ask for text or URL
-    responseText = "Please paste the vacancy details here as text or share the vacancy URL.\nIf the details are in image form like screenshot, you may send them to our WhatsApp number: +256881193707.";
-    outputContexts.push({ name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 1 });
-  } else {
-    // Capture cover letter details
-    responseText = `Cover letter vacancy captured: Position - ${params.positionApplied}, Company - ${params.companyApplied}, Vacancy Details: ${params.vacancyDetails}.`;
-    outputContexts.push({ name: `${session}/contexts/cover_letter_loop`, lifespanCount: 1 });
-  }
-  break;
-
-    
-     // 12. Payment Proof
-  case "CV_PaymentProof":
-    if (!params.paymentProof) {
-      responseText = "Provide proof of payment (transaction ID, receipt number, or screenshot confirmation).";
-      outputContexts.push({ name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 1 });
-    } else {
-      responseText = `Payment proof received: ${params.paymentProof}.\nThank you! Please also send a screenshot to WhatsApp +265881193707 for verification. Your CV/cover letter process will now begin.`;
-      outputContexts = []; // end flow
-    }
-    break;
-
- default:
-        responseText = "Sorry, I didn’t get that.";
-    }
-
-    // ✅ Always return JSON
-    return res.json({
-      fulfillmentText: responseText,
-      outputContexts: outputContexts
-    });
 
   } catch (error) {
-    console.error("Webhook error:", error);
-    return res.status(500).json({ fulfillmentText: "Internal Server Error" });
+    console.error("Webhook error:", error.message);
+    console.error(error.stack);
+    return res.status(500).json({
+      fulfillmentMessages: [
+        { text: { text: ["Internal Server Error. Please try again later."] } }
+      ]
+    });
   }
 });
 
