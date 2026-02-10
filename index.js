@@ -7,12 +7,6 @@ app.use(bodyParser.json());
 // Helper function to pick a random variant
 function getVariant(intentType, params = {}) {
   const variants = {
-    serviceSelection: [
-      `Great, you’ve chosen: ${params.serviceType}.`,
-      `Alright, your selected service is ${params.serviceType}.`,
-      `Got it, you’d like ${params.serviceType}.`,
-      `You’re going ahead with ${params.serviceType}.`
-    ],
     greeting: [
       [
         "Welcome to EasySuccor — your trusted partner in shaping your first impression.",
@@ -42,7 +36,9 @@ function getVariant(intentType, params = {}) {
         "- Professional",
         "- Non-Working Professional",
         "- Returning Client"
+	  ]
       ],
+	 
     serviceSelection: [
       `Great, you’ve chosen: ${params.serviceType}.`,
       `Alright, your selected service is ${params.serviceType}.`,
