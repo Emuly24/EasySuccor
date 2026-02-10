@@ -20,7 +20,7 @@ app.post("/webhook", (req, res) => {
    
   switch (intent) {
     // 1. Category → Show charges
-    case "CV_Category":
+    case "cv_category":
       if (params.category === "Student") {
         responseText = "You are a student or recent graduate. Charges: CV only MK6,000; Editable CV MK10,000; Cover letter MK5,000; Resume + Cover Letter MK8,000. Do you agree to proceed with these charges?";
       } else if (params.category === "Professional") {
