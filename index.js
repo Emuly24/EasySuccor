@@ -13,6 +13,42 @@ function getVariant(intentType, params = {}) {
       `Got it, you’d like ${params.serviceType}.`,
       `You’re going ahead with ${params.serviceType}.`
     ],
+    greeting: [
+      [
+        "Welcome to EasySuccor — your trusted partner in shaping your first impression.",
+        "Please tell me your category:",
+        "- Student",
+        "- Recent Graduate",
+        "- Professional",
+        "- Non-Working Professional",
+        "- Returning Client"
+      ],
+      [
+        "Hello and welcome to EasySuccor!",
+        "We’re here to help you craft a professional CV or application letter.",
+        "Choose your category:",
+        "- Student",
+        "- Recent Graduate",
+        "- Professional",
+        "- Non-Working Professional",
+        "- Returning Client"
+      ],
+      [
+        "Greetings from EasySuccor!",
+        "Let’s get started on building your CV or application letter.",
+        "Which category best describes you?",
+        "- Student",
+        "- Recent Graduate",
+        "- Professional",
+        "- Non-Working Professional",
+        "- Returning Client"
+      ],
+    serviceSelection: [
+      `Great, you’ve chosen: ${params.serviceType}.`,
+      `Alright, your selected service is ${params.serviceType}.`,
+      `Got it, you’d like ${params.serviceType}.`,
+      `You’re going ahead with ${params.serviceType}.`
+    ],
     personalInfo: [
       `I’ve noted your personal details: Name ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`,
       `So far, you’ve shared: Name ${params.firstName} ${params.lastName}, Contact ${params.phoneNumber}, Email ${params.email}.`,
@@ -206,6 +242,19 @@ app.post("/webhook", (req, res) => {
     console.log("Incoming contexts:", queryResult.outputContexts);
 
     switch (intent) {
+  // 0. Greeting → Category selection
+  case "Greeting":
+  const responseGreeting = {
+    fulfillmentMessages: [
+      { text: { text: [getVariant("greeting", params)] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 1 }
+    ]
+  };
+  console.log("Response being sent:", JSON.stringify(responseGreeting, null, 2));
+  return res.json(responseGreeting);
+
       // 1. CV Category → Payment Agreement
       case "cv_category":
   const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
