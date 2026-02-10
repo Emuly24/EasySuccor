@@ -21,18 +21,21 @@ app.post("/webhook", (req, res) => {
   switch (intent) {
     // 1. Category → Show charges
     case "cv_category":
-      if (params.category === "Student") {
-        responseText = "You are a student or recent graduate. Charges: CV only MK6,000; Editable CV MK10,000; Cover letter MK5,000; Resume + Cover Letter MK8,000. Do you agree to proceed with these charges?";
-      } else if (params.category === "Professional") {
-        responseText = "You are a working professional. Charges: CV only MK8,000; Editable CV MK12,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
-      } else if (params.category === "Non-Working Professional") {
-        responseText = "You are a non-working professional. Charges: CV only MK8,000; Editable CV MK10,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
-      } else if (params.category === "Returning Client") {
-        responseText = "Welcome back, you are a returning client. Charges: Minor CV updates MK3,000; Major revisions MK6,000; Cover letter MK5,000; CV + Cover Letter update package MK7,000. Do you agree to proceed with these charges?";
-      } else {
-        responseText = "Please select a valid category.";
-      }
-      break;
+  const category = Array.isArray(params.category) ? params.category[0] : params.category;
+
+  if (category === "Student") {
+    responseText = "You are a student or recent graduate. Charges: CV only MK6,000; Editable CV MK10,000; Cover letter MK5,000; Resume + Cover Letter MK8,000. Do you agree to proceed with these charges?";
+  } else if (category === "Professional") {
+    responseText = "You are a working professional. Charges: CV only MK8,000; Editable CV MK12,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
+  } else if (category === "Non-Working Professional") {
+    responseText = "You are a non-working professional. Charges: CV only MK8,000; Editable CV MK10,000; Cover letter MK7,000; Resume + Cover Letter MK10,000; Editable Resume + Cover Letter MK12,000. Do you agree to proceed with these charges?";
+  } else if (category === "Returning Client") {
+    responseText = "Welcome back, you are a returning client. Charges: Minor CV updates MK3,000; Major revisions MK6,000; Cover letter MK5,000; CV + Cover Letter update package MK7,000. Do you agree to proceed with these charges?";
+  } else {
+    responseText = "Please select a valid category.";
+  }
+  break;
+
 
   // 2. Payment Method
   case "CV_PaymentMethod":
