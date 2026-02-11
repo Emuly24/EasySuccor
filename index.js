@@ -38,6 +38,41 @@ const variants = {
       "As a returning client, here are your charges: Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000.",
       "Glad to see you again! Charges: Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000."
     ],
+	serviceSelection: [
+  [
+    "Here are the services you can choose from:",
+    "- New CV Creation",
+    "- Editable CV",
+    "- Cover Letter/Application Letter",
+    "- CV Update",
+    "Which service would you like to proceed with?"
+  ],
+  [
+    "These are the available services:",
+    "• New CV Creation",
+    "• Editable CV",
+    "• Cover Letter/Application Letter",
+    "• CV Update",
+    "Please tell me the service you’d like to continue with."
+  ],
+  [
+    "Our services include:",
+    "1. New CV Creation",
+    "2. Editable CV",
+    "3. Cover Letter/Application Letter",
+    "4. CV Update",
+    "Select the option you want to move forward with."
+  ],
+  [
+    "You can select from the following:",
+    "- New CV Creation",
+    "- Editable CV",
+    "- Cover Letter/Application Letter",
+    "- CV Update",
+    "Which of these services do you want to start with?"
+  ],
+
+
 
   greeting: [
     [
@@ -584,19 +619,55 @@ case "cv_payment_agreement":
     return res.json(responseDisagree);
   }
 // 3. Service Selection → Personal Info
-case "CV_ServiceSelection":
+ccase "CV_ServiceSelection":
   const responseServiceSelection = {
     fulfillmentMessages: [
-      { text: { text: [getVariant("serviceSelection", params)] } },
-      { text: { text: ["Let’s move to your personal information."] } },
-      { text: { text: ["Enter your first name to begin."] } }
+      { text: { text: [getVariant("serviceSelection", params)] } }
     ],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 1 }
+      { name: `${session}/contexts/awaiting_cv_selection_agreement`, lifespanCount: 1 }
     ]
   };
   console.log("Response being sent:", JSON.stringify(responseServiceSelection, null, 2));
   return res.json(responseServiceSelection);
+
+case "cv_service_selection_agreement":
+  if (params.agreement === "Agree") {
+    let nextContext = null;
+
+    switch (params.serviceChoice) {
+      case "New CV":
+      case "Editable CV":
+      case "CV Update":
+        nextContext = "awaiting_personal_info";
+        break;
+      case "Cover Letter":
+        nextContext = "awaiting_cover_letter_info";
+        break;
+    }
+
+    const agreeMessages = getVariant("serviceSelectionAgreementAgree", params);
+    const responseAgree = {
+      fulfillmentMessages: agreeMessages.map(msg => ({ text: { text: [msg] } })),
+      outputContexts: nextContext
+        ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 1 }]
+        : []
+    };
+    return res.json(responseAgree);
+
+  } else {
+    const disagreeMessages = getVariant("serviceSelectionAgreementDisagree", params);
+    const responseDisagree = {
+      fulfillmentMessages: [
+        ...disagreeMessages.map(msg => ({ text: { text: [msg] } })),
+        { text: { text: ["Would you like to reconsider and continue with this service?"] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/reconsider_service_selection`, lifespanCount: 1 }
+      ]
+    };
+    return res.json(responseDisagree);
+  }
 
 
 // 4. Personal Info → Education
