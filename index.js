@@ -20,11 +20,11 @@ const variants = {
       "As a recent graduate, here are your charges: CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000.",
       "Recent Graduate category selected. Charges: CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000."
     ],
-    "professional": [
-      "Category: Professional. Charges — CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
+    "working professional": [
+      "Category: Working Professional. Charges — CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
       "You’re a Working Professional. Pricing: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "As a professional, here are your charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "Professional category selected. Charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000."
+      "As a working professional, here are your charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
+      "workingProfessional category selected. Charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000."
     ],
     "non-working professional": [
       "Category: Non‑Working Professional. Charges — CV MK8,000, Editable CV MK10,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
@@ -397,7 +397,7 @@ function handleReconsider(params, session) {
         ...updateLines.map(line => ({ text: { text: [line] } }))
       ],
       outputContexts: [
-        { name: `${session}/contexts/awaiting_service_choice`, lifespanCount: 1 }
+        { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 1 }
       ]
     };
   } else {
@@ -428,13 +428,67 @@ app.post("/webhook", (req, res) => {
     console.log("Incoming contexts:", queryResult.outputContexts);
 
     switch (intent) {
+	case "CV_Category":
+  let responseCategory;
+
+  if (params.userType === "graduate") {
+    responseCategory = {
+      fulfillmentMessages: [
+        { text: { text: [getVariant("graduateCategory", params)] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      ]
+    };
+  } else if (params.userType === "student") {
+    responseCategory = {
+      fulfillmentMessages: [
+        { text: { text: [getVariant("studentCategory", params)] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      ]
+    };
+  } else if (params.userType === "workingprofessional") {
+    responseCategory = {
+      fulfillmentMessages: [
+        { text: { text: [getVariant("professionalCategory", params)] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      ]
+    };
+  } else if (params.userType === "non-working") {
+    responseCategory = {
+      fulfillmentMessages: [
+        { text: { text: [getVariant("nonWorkingCategory", params)] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      ]
+    };
+  } else {
+    responseCategory = {
+      fulfillmentMessages: [
+        { text: { text: ["I couldn’t determine your category. Please specify if you are a Student, Graduate, Professional, or Non‑working."] } }
+      ]
+    };
+  }
+
+  console.log("Response being sent:", JSON.stringify(responseCategory, null, 2));
+  return res.json(responseCategory);
+
+
+  console.log("Response being sent:", JSON.stringify(responseCategory, null, 2));
+  return res.json(responseCategory);
+
       // New CV Choice
       case "CV_NewCVChoice":
         const newCVLines = getVariant("newCVChoice", params);
         const responseNewCV = {
           fulfillmentMessages: newCVLines.map(line => ({ text: { text: [line] } })),
           outputContexts: [
-            { name: `${session}/contexts/awaiting_new_cv_agreement`, lifespanCount: 1 }
+            { name: `${session}/contexts/awaiting_service_selection_agreement`, lifespanCount: 1 }
           ]
         };
         console.log("Response being sent:", JSON.stringify(responseNewCV, null, 2));
@@ -446,7 +500,7 @@ app.post("/webhook", (req, res) => {
         const responseEditableCV = {
           fulfillmentMessages: editableCVLines.map(line => ({ text: { text: [line] } })),
           outputContexts: [
-            { name: `${session}/contexts/awaiting_editable_cv_agreement`, lifespanCount: 1 }
+            { name: `${session}/contexts/awaiting_service_selection_agreement`, lifespanCount: 1 }
           ]
         };
         console.log("Response being sent:", JSON.stringify(responseEditableCV, null, 2));
@@ -458,7 +512,7 @@ app.post("/webhook", (req, res) => {
         const responseCoverLetterChoice = {
           fulfillmentMessages: coverLetterLines.map(line => ({ text: { text: [line] } })),
           outputContexts: [
-            { name: `${session}/contexts/awaiting_cover_letter_agreement`, lifespanCount: 1 }
+            { name: `${session}/contexts/awaiting_service_selection_agreement`, lifespanCount: 1 }
           ]
         };
         console.log("Response being sent:", JSON.stringify(responseCoverLetterChoice, null, 2));
@@ -470,90 +524,12 @@ app.post("/webhook", (req, res) => {
         const responseUpdateChoice = {
           fulfillmentMessages: updateLines.map(line => ({ text: { text: [line] } })),
           outputContexts: [
-            { name: `${session}/contexts/awaiting_update_agreement`, lifespanCount: 1 }
+            { name: `${session}/contexts/awaiting_service_selection_agreement`, lifespanCount: 1 }
           ]
         };
         console.log("Response being sent:", JSON.stringify(responseUpdateChoice, null, 2));
         return res.json(responseUpdateChoice);
-	 // New CV Agreement
-      case "cv_new_cv_agreement":
-        const responseNewAgreement = buildAgreementResponse(
-          params,
-          session,
-          "awaiting_personal_info",
-          [
-            "Thank you for agreeing to proceed with New CV Creation.",
-            "Let’s continue with your personal information.",
-            "Enter your first name to begin."
-          ],
-          [
-            "We understand you don’t agree to proceed with New CV Creation.",
-            "Unfortunately, we cannot continue without your details."
-          ]
-        );
-        console.log("Response being sent:", JSON.stringify(responseNewAgreement, null, 2));
-        return res.json(responseNewAgreement);
-
-      // Editable CV Agreement
-      case "cv_editable_cv_agreement":
-        const responseEditableAgreement = buildAgreementResponse(
-          params,
-          session,
-          "awaiting_personal_info",
-          [
-            "Thank you for agreeing to proceed with Editable CV.",
-            "Let’s continue with your personal information.",
-            "Enter your first name to begin."
-          ],
-          [
-            "You’ve chosen not to proceed with Editable CV.",
-            "Without agreement, we cannot continue."
-          ]
-        );
-        console.log("Response being sent:", JSON.stringify(responseEditableAgreement, null, 2));
-        return res.json(responseEditableAgreement);
-
-      // Cover Letter Agreement
-      case "cv_cover_letter_agreement":
-        const responseCoverAgreement = buildAgreementResponse(
-          params,
-          session,
-          "awaiting_cover_letter_info",
-          [
-            "Thank you for agreeing to provide your cover letter details.",
-            "Please provide the position you are applying for and the company name."
-          ],
-          [
-            "We cannot proceed without your cover letter details.",
-            "Thank you for considering EasySuccor."
-          ]
-        );
-        console.log("Response being sent:", JSON.stringify(responseCoverAgreement, null, 2));
-        return res.json(responseCoverAgreement);
-
-      // CV Update Agreement
-      case "cv_update_agreement":
-        const responseUpdateAgreement = buildAgreementResponse(
-          params,
-          session,
-          "awaiting_update_info",
-          [
-            "Thank you for agreeing to proceed with CV Update.",
-            "Please specify which section of your CV you want to update."
-          ],
-          [
-            "You’ve chosen not to proceed with CV Update.",
-            "Without agreement, we cannot continue."
-          ]
-        );
-        console.log("Response being sent:", JSON.stringify(responseUpdateAgreement, null, 2));
-        return res.json(responseUpdateAgreement);
-
-      // Reconsider Agreement Case
-      case "cv_reconsider_agreement":
-        const responseReconsider = handleReconsider(params, session);
-        console.log("Response being sent:", JSON.stringify(responseReconsider, null, 2));
-        return res.json(responseReconsider);
+	 // 
 		
 // 0. Greeting → Category selection
 case "Greeting":
