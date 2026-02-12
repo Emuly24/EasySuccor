@@ -338,7 +338,10 @@ case "cv_service_selection_agreement":
   }
 // === Payment Agreement (Pay Now vs Pay Later) ===
 case "cv_payment_agreement":
-  if (params.agreement === "Agree") {
+  // Normalize agreement parameter (handle array vs string)
+  const agreement = Array.isArray(params.agreement) ? params.agreement[0] : params.agreement;
+
+  if (agreement === "Agree") {
     let nextContext = null;
     let messages = [];
 
@@ -378,6 +381,7 @@ case "cv_payment_agreement":
     return res.json(responseAgree);
 
   } else {
+    // Disagree flow
     const disagreeMessages = getVariant("paymentDisagree", params);
     const reconsiderMessages = getVariant("reconsiderPayment", params);
 
@@ -392,7 +396,6 @@ case "cv_payment_agreement":
     };
     return res.json(responseDisagree);
   }
-
 
 
 // === CV Update Menu ===
