@@ -354,6 +354,24 @@ case "cv_payment_agreement":
         messages = getVariant("payNowAgreement", params);
         break;
 
+ // === Payment Agreement (Pay Now vs Pay Later) ===
+case "cv_payment_agreement":
+  // Normalize agreement parameter (handle array vs string)
+  const agreement = Array.isArray(params.agreement) ? params.agreement[0] : params.agreement;
+
+  if (agreement && agreement.toLowerCase() === "agree") {
+    let nextContext = null;
+    let messages = [];
+
+    switch ((params.paymentMethod || "").toLowerCase()) {
+      case "airtel money":
+      case "mo626":
+      case "mpamba":
+        // Pay Now flow
+        nextContext = "awaiting_payment_proof";
+        messages = getVariant("payNowAgreement", params);
+        break;
+
       case "pay later":
         // Pay Later flow → continue into service they already chose
         nextContext = "awaiting_service_selection";
@@ -396,6 +414,7 @@ case "cv_payment_agreement":
     };
     return res.json(responseDisagree);
   }
+
 
 
 // === CV Update Menu ===
