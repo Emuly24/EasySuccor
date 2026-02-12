@@ -67,7 +67,7 @@ function getVariant(intentType, params = {}) {
     employmentInfo: getEmploymentVariants(),
     experienceExtrasInfo: getExperienceExtrasVariants(),
     refereesInfo: getRefereesVariants(),
-    languagesInfo: getLanguagesVariants(),
+    languagesInfo: getLanguagesInfoVariants(),
     coverLetterInfo: getCoverLetterVariants(),
     paymentMethod: getPaymentMethodVariants(),
     paymentProof: getPaymentProofVariants(),
@@ -336,23 +336,6 @@ case "cv_service_selection_agreement":
     };
     return res.json(responseDisagree);
   }
-// === Payment Agreement (Pay Now vs Pay Later) ===
-case "cv_payment_agreement":
-  // Normalize agreement parameter (handle array vs string)
-  const agreement = Array.isArray(params.agreement) ? params.agreement[0] : params.agreement;
-
-  if (agreement === "Agree") {
-    let nextContext = null;
-    let messages = [];
-
-    switch ((params.paymentMethod || "").toLowerCase()) {
-      case "airtel money":
-      case "mo626":
-      case "mpamba":
-        // Pay Now flow
-        nextContext = "awaiting_payment_proof";
-        messages = getVariant("payNowAgreement", params);
-        break;
 
  // === Payment Agreement (Pay Now vs Pay Later) ===
 case "cv_payment_agreement":
