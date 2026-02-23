@@ -230,18 +230,47 @@ case "cv_category":
     ]
   };
   return res.json(responseCategory);
-
-// 3. Service Selection → Personal Info
+  
+// 3. Service Selection → Route to correct flow
 case "CV_ServiceSelection":
+  const serviceChoice = (params.serviceType || "").toLowerCase();
+
+  let nextContext = null;
+  let messages = [];
+
+  switch (serviceChoice) {
+    case "new cv":
+    case "editable cv":
+      nextContext = "awaiting_personal_info";
+      messages = [getVariant("serviceSelection", params), "Let’s move to your personal information."];
+      break;
+
+    case "cv update":
+    case "update":
+      nextContext = "update_mode";
+      messages = [getVariant("serviceSelection", params), "Here are the sections you can update."];
+      break;
+
+    case "cover letter":
+      nextContext = "awaiting_cover_letter_info";
+      messages = [getVariant("serviceSelection", params), "Let’s move to your cover letter details."];
+      break;
+
+    default:
+      messages = [getVariant("serviceSelection", params)];
+      break;
+  }
+
   const responseServiceSelection = {
-    fulfillmentMessages: [
-      { text: { text: [getVariant("serviceSelection", params)] } }
-    ],
-    outputContexts: [
-      { name: `${session}/contexts/awaiting_cv_selection_agreement`, lifespanCount: 1 }
-    ]
+    fulfillmentMessages: messages.map(msg => ({ text: { text: [msg] } })),
+    outputContexts: nextContext
+      ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 1 }]
+      : []
   };
+
   return res.json(responseServiceSelection);
+
+  
 // === Service Summary ===
 case "Service_Summary":
   const serviceChoice = params.serviceChoiceContext || "new_cv";
@@ -279,21 +308,34 @@ Cover Letter Summary:
   };
 
   return res.json(responseSummary);
+  
 // === Service Selection Agreement ===
 case "cv_service_selection_agreement":
   if (params.agreement === "Agree") {
     let nextContext = null;
+    let messages = [];
 
     switch ((params.serviceChoice || "").toLowerCase()) {
       case "new cv":
       case "editable cv":
         nextContext = "awaiting_personal_info";
+        messages = getVariant("serviceSelectionAgreementAgree", params);
         break;
+
       case "cv update":
+      case "update":
         nextContext = "update_mode";
+        messages = getVariant("serviceSelectionAgreementAgree", params)
+          .concat(["Here are the sections you can update."]);
         break;
+
       case "cover letter":
         nextContext = "awaiting_cover_letter_info";
+        messages = getVariant("serviceSelectionAgreementAgree", params);
+        break;
+
+      default:
+        messages = getVariant("serviceSelectionAgreementAgree", params);
         break;
     }
 
@@ -302,9 +344,8 @@ case "cv_service_selection_agreement":
       ? `service_choice_${nextContext.replace(/[^a-zA-Z0-9_-]/g, "")}`
       : null;
 
-    const agreeMessages = getVariant("serviceSelectionAgreementAgree", params);
     const responseAgree = {
-      fulfillmentMessages: agreeMessages.map(msg => ({ text: { text: [msg] } })),
+      fulfillmentMessages: messages.map(msg => ({ text: { text: [msg] } })),
       outputContexts: []
     };
 
@@ -336,6 +377,7 @@ case "cv_service_selection_agreement":
     };
     return res.json(responseDisagree);
   }
+
 
  // === Payment Agreement (Pay Now vs Pay Later) ===
 case "cv_payment_agreement":
@@ -429,6 +471,18 @@ case "CV_Update":
     };
     return res.json(responseUpdateNewClient);
   }
+// === Universal Proceed to Payment (after updates) ===
+case "CV_Update_ProceedPayment":
+  const responseProceedPayment = {
+    fulfillmentMessages: [
+      { text: { text: ["Alright, you’ve finished updating your CV. Let’s proceed to payment."] } },
+      { text: { text: ["Reminder: You’ll see the exact charge for your chosen update service at the payment step."] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 }
+    ]
+  };
+  return res.json(responseProceedPayment);
 
 
 // === Personal Info ===
