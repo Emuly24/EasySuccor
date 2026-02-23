@@ -325,13 +325,13 @@ case "CV_ServiceSelection":
 
   return res.json(responseServiceSelection);
 
-
-
- // === Payment Agreement (Pay Now vs Pay Later) ===
+// === Payment Agreement (Pay Now vs Pay Later vs Update vs Reconsider) ===
 case "cv_payment_agreement":
+  // Normalize parameter names
+  const agreementChoice = (params.agreement || params.payment_agreement || "").toLowerCase();
   const serviceChoice = (params.serviceType || "").toLowerCase();
 
-  if (params.agreement === "Pay Now") {
+  if (agreementChoice === "pay now" || agreementChoice === "yes") {
     return res.json({
       fulfillmentMessages: [
         { text: { text: ["Great, let’s proceed with payment proof."] } }
@@ -340,12 +340,12 @@ case "cv_payment_agreement":
         {
           name: `${session}/contexts/awaiting_payment_proof`,
           lifespanCount: 2,
-          parameters: { serviceChoice } // store client’s original choice
+          parameters: { serviceChoice }
         }
       ]
     });
 
-  } else if (params.agreement === "Pay Later") {
+  } else if (agreementChoice === "pay later") {
     return res.json({
       fulfillmentMessages: [
         { text: { text: ["Alright, let’s capture your personal details first."] } }
@@ -355,7 +355,7 @@ case "cv_payment_agreement":
       ]
     });
 
-  } else if (params.agreement === "Update") {
+  } else if (agreementChoice === "update") {
     return res.json({
       fulfillmentMessages: [
         { text: { text: ["Got it, you’re in update mode. You can start updating any section."] } }
@@ -375,6 +375,7 @@ case "cv_payment_agreement":
       ]
     });
   }
+
 
 
 // === CV Update Menu ===
