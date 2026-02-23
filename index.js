@@ -303,11 +303,12 @@ Cover Letter Summary:
   const responseSummary = {
     fulfillmentMessages: [{ text: { text: [summaryText] } }],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      { name: `${session}/contexts/awaiting_payment_reminder`, lifespanCount: 1 }
     ]
   };
 
   return res.json(responseSummary);
+
   
 // === Service Selection Agreement ===
 case "cv_service_selection_agreement":
@@ -855,6 +856,19 @@ case "cv_cover_letter_agreement":
     getVariant("coverLetterReconsiderPrompt", params)
   );
   return res.json(responseCoverAgreement);
+  // === Payment Reminder ===
+case "Payment_Reminder":
+  const charge = getExactCharge(params.category, params.serviceChoice);
+  const reminderMessages = getChargeReminderVariants(params.serviceChoice, params.category, charge);
+
+  const responsePaymentReminder = {
+    fulfillmentMessages: reminderMessages.map(msg => ({ text: { text: [msg] } })),
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 }
+    ]
+  };
+  return res.json(responsePaymentReminder);
+
 
 // Payment Method → Awaiting Proof
 // === CV Payment Method ===
