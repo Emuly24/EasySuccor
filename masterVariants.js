@@ -135,6 +135,17 @@ function getServiceSelectionVariants() {
     ]
   };
 }
+const paymentAgreementVariants = [
+  "Before we continue, please confirm how you’d like to proceed with payment: Pay Now (provide proof immediately), Pay Later (continue CV details first), Update (returning client), or Reconsider (pause and review options). Which option works best for you?",
+  
+  "Let’s decide your next step. Would you like to Pay Now, Pay Later while we capture your CV details, Update your CV, or Reconsider your choice?",
+  
+  "Please choose how you’d like to move forward: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause.",
+  
+  "To proceed, select one of these options: Pay Now, Pay Later, Update CV, or Reconsider. Which works best for you?",
+  
+  "Confirm your preferred path: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause."
+];
 
 // === Payment Variants ===
 function getPaymentVariants() {
