@@ -221,20 +221,20 @@ function handleReconsider(params, session, restartContext, restartMessage) {
 }
 
 // === Greeting ===
-case "Greeting":
-  const leadIn = getVariant("greetingLeadIn", params);
-  const greetingBlock = getVariant("greeting", params).greeting;
-  const chosenGreeting = greetingBlock[Math.floor(Math.random() * greetingBlock.length)];
+const greetingBlock = getVariant("greeting", params).greeting || [];
+const chosenGreeting = greetingBlock.length > 0
+  ? greetingBlock[Math.floor(Math.random() * greetingBlock.length)]
+  : "Welcome to EasySuccor!";
+return res.json({
+  fulfillmentMessages: [
+    { text: { text: [leadIn] } },
+    { text: { text: [chosenGreeting] } }
+  ],
+  outputContexts: [
+    { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
+  ]
+});
 
-  return res.json({
-    fulfillmentMessages: [
-      { text: { text: [leadIn] } },
-      ...chosenGreeting.map(msg => ({ text: { text: [msg] } }))
-    ],
-    outputContexts: [
-      { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 } // <-- corrected
-    ]
-  });
 
 
 // === CV Category ===
