@@ -1,3 +1,16 @@
+
+// === Greeting Lead-In Variants ===
+function getGreetingLeadInVariants() {
+  return [
+    "Welcome, let’s get started on shaping your professional journey:",
+    "Hello, I’m here to help you craft a CV or cover letter with dignity and clarity:",
+    "Greetings! Together we’ll build a strong first impression:",
+    "Welcome aboard — let’s begin by understanding your background:",
+    "Hi there, let’s start by identifying your category so we can tailor the service:"
+  ];
+}
+
+
 // === Greeting Variants ===
 function getGreetingVariants() {
   return {
@@ -40,38 +53,33 @@ function getGreetingVariants() {
   };
 }
 
-// === Category Variants ===
+// === Category Variants (cleaned) ===
 function getCategoryVariants() {
   return {
     student: [
-      "Category: Student. Charges — CV MK6,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK8,000.",
-      "You’re a Student. Pricing: CV MK6,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK8,000.",
-      "As a student starting out, here are your charges: CV MK6,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK8,000.",
-      "Student category selected. Charges: CV MK6,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK8,000."
+      "You’re a Student.",
+      "Student category selected.",
+      "As a student starting out, here’s your pricing."
     ],
     recentGraduate: [
-      "Category: Recent Graduate. Charges — CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000.",
-      "You’re a Recent Graduate. Pricing: CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000.",
-      "As a recent graduate, here are your charges: CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000.",
-      "Recent Graduate category selected. Charges: CV MK7,000, Editable CV MK10,000, Cover letter MK5,000, Resume + Cover Letter MK9,000."
+      "You’re a Recent Graduate.",
+      "Recent Graduate category selected.",
+      "As a recent graduate, here’s your pricing."
     ],
     workingProfessional: [
-      "Category: Working Professional. Charges — CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "You’re a Working Professional. Pricing: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "As a working professional, here are your charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "Working Professional category selected. Charges: CV MK8,000, Editable CV MK12,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000."
+      "You’re a Working Professional.",
+      "Working Professional category selected.",
+      "As a working professional, here’s your pricing."
     ],
     nonWorkingProfessional: [
-      "Category: Non‑Working Professional. Charges — CV MK8,000, Editable CV MK10,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "You’re a Non‑Working Professional. Pricing: CV MK8,000, Editable CV MK10,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "As a non‑working professional, here are your charges: CV MK8,000, Editable CV MK10,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000.",
-      "Non‑Working Professional category selected. Charges: CV MK8,000, Editable CV MK10,000, Cover letter MK7,000, Resume + Cover Letter MK10,000, Editable Resume + Cover Letter MK12,000."
+      "You’re a Non‑Working Professional.",
+      "Non‑Working Professional category selected.",
+      "As a non‑working professional, here’s your pricing."
     ],
     returningClient: [
-      "Welcome back, Returning Client. Charges — Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000.",
-      "Returning Client category selected. Pricing: Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000.",
-      "As a returning client, here are your charges: Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000.",
-      "Glad to see you again! Charges: Minor CV updates MK3,000, Major revisions MK6,000, Editable CV MK10,000, Cover letter MK5,000, CV + Cover Letter update package MK7,000."
+      "Welcome back, Returning Client.",
+      "Returning Client category selected.",
+      "Glad to see you again! Here’s your pricing."
     ],
     reconsiderCategory: [
       "Would you like to reconsider your category selection?",
@@ -80,6 +88,7 @@ function getCategoryVariants() {
     ]
   };
 }
+
 
 // === Service Selection Variants ===
 function getServiceSelectionVariants() {
@@ -135,17 +144,37 @@ function getServiceSelectionVariants() {
     ]
   };
 }
-const paymentAgreementVariants = [
-  "Before we continue, please confirm how you’d like to proceed with payment: Pay Now (provide proof immediately), Pay Later (continue CV details first), Update (returning client), or Reconsider (pause and review options). Which option works best for you?",
-  
-  "Let’s decide your next step. Would you like to Pay Now, Pay Later while we capture your CV details, Update your CV, or Reconsider your choice?",
-  
-  "Please choose how you’d like to move forward: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause.",
-  
-  "To proceed, select one of these options: Pay Now, Pay Later, Update CV, or Reconsider. Which works best for you?",
-  
-  "Confirm your preferred path: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause."
-];
+function getCvPaymentAgreementVariants() {
+  return [
+    "Before we continue, please confirm how you’d like to proceed with payment: Pay Now (provide proof immediately), Pay Later (continue CV details first), Update (returning client), or Reconsider (pause and review options). Which option works best for you?",
+    
+    "Let’s decide your next step. Would you like to Pay Now, Pay Later while we capture your CV details, Update your CV, or Reconsider your choice?",
+    
+    "Please choose how you’d like to move forward: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause.",
+    
+    "To proceed, select one of these options: Pay Now, Pay Later, Update CV, or Reconsider. Which works best for you?",
+    
+    "Confirm your preferred path: Pay Now for immediate proof, Pay Later to continue CV entry, Update if you’re returning, or Reconsider if you’d like to pause."
+  ];
+}
+function getPaymentMethodDisagreeVariants() {
+  return [
+    "We understand you don’t agree with the payment method provided.",
+    "It seems you’re not comfortable with this payment option.",
+    "You’ve indicated disagreement with the payment method.",
+    "We respect your choice not to proceed with this payment option."
+  ];
+}
+
+function getReconsiderPaymentMethodVariants() {
+  return [
+    "Would you like to reconsider and proceed with a different payment method?",
+    "Perhaps another payment option might work better for you — would you like to reconsider?",
+    "Would you like to review the payment methods again before making a final choice?",
+    "You can reconsider and choose another payment method if you’d like."
+  ];
+}
+
 
 // === Payment Variants ===
 function getPaymentVariants() {
@@ -517,9 +546,19 @@ function getUpdateFallbackVariants() {
     ]
   };
 }
+// === Service Summary Lead-In Variants ===
+function getServiceSummaryLeadInVariants() {
+  return [
+    "Here’s a summary of the details we’ve captured so far:",
+    "Let me show you a quick summary of your information:",
+    "Here’s an overview of what we’ve recorded:",
+    "Let’s review the details you’ve provided so far:",
+    "Here’s a snapshot of your CV/cover letter information:"
+  ];
+}
 
 // === Service Summary Variants ===
-function getServiceSummaryVariants() {
+function getServiceSummaryVariants(params) {
   return {
     newCVSummary: [
       `CV Summary:\n👤 Personal Info: ${params.fullName || "Not provided"}\n🎓 Education: ${params.educationInfo || "Not provided"}\n📜 Certifications: ${params.certificationsInfo || "Not provided"}\n💼 Employment: ${params.employmentInfo || "Not provided"}\n🤝 Referees: ${params.refereesInfo || "Not provided"}`
@@ -531,6 +570,91 @@ function getServiceSummaryVariants() {
       `Cover Letter Summary:\n👤 Personal Info: ${params.fullName || "Not provided"}\n🎯 Target Role: ${params.jobTitle || "Not provided"}\n💡 Motivation: ${params.motivationStatement || "Not provided"}`
     ]
   };
+}
+
+// === Missing Details Variant Sets ===
+
+function getMissingEducationDetailsVariants() {
+  return [
+    "I didn’t catch all your education details. Could you please provide your degree, institution, and completion year?",
+    "Your education record seems incomplete. Kindly share your degree, school name, and year of completion.",
+    "To record your education, I’ll need your degree, institution, and the year you finished.",
+    "Please provide your degree, institution, and completion year so we can capture your education details."
+  ];
+}
+
+function getMissingCertificationsDetailsVariants() {
+  return [
+    "I didn’t get all your certification details. Could you share the certification name and year?",
+    "Your certification record seems incomplete. Please provide the certification name and the year obtained.",
+    "To record your certification, I’ll need the name and the year you earned it.",
+    "Kindly provide the certification name and year so we can capture your details."
+  ];
+}
+
+function getMissingExperienceExtrasDetailsVariants() {
+  return [
+    "I didn’t catch all the details of your volunteering or project contribution. Could you provide the activity, role, and position?",
+    "Your experience extras record seems incomplete. Please share the activity name, your role, and position held.",
+    "To record this experience, I’ll need the activity, role played, and your position.",
+    "Kindly provide the activity, role, and position so we can capture your experience extras."
+  ];
+}
+
+function getMissingRefereeDetailsVariants() {
+  return [
+    "I didn’t catch all your referee details. Could you provide the referee’s name and contact information?",
+    "Your referee record seems incomplete. Please share the referee’s name and contact details.",
+    "To record your referee, I’ll need their name and contact information.",
+    "Kindly provide the referee’s name and contact details so we can capture your referee information."
+  ];
+}
+
+function getMissingLanguageDetailsVariants() {
+  return [
+    "I didn’t catch all your language details. Could you provide the language name and your proficiency level?",
+    "Your language record seems incomplete. Please share the language name and how proficient you are.",
+    "To record your language, I’ll need the language name and your proficiency level.",
+    "Kindly provide the language name and proficiency so we can capture your language details."
+  ];
+}
+
+// === Skip Details Variant Sets ===
+
+function getSkipCertificationsVariants() {
+  return [
+    "Alright, we’ll skip certifications for now and move forward.",
+    "Certifications skipped. Let’s continue with your CV details.",
+    "No certifications recorded. Proceeding to the next section.",
+    "Skipping certifications as requested. Moving on."
+  ];
+}
+
+function getSkipExperienceExtrasVariants() {
+  return [
+    "Okay, we’ll skip experience extras for now and continue.",
+    "Experience extras skipped. Let’s move forward with your CV.",
+    "No additional volunteering or project contributions recorded. Proceeding.",
+    "Skipping experience extras as requested. Moving on to the next section."
+  ];
+}
+
+function getSkipRefereesVariants() {
+  return [
+    "Alright, we’ll skip referees for now and move forward.",
+    "Referees skipped. Let’s continue with your CV details.",
+    "No referees recorded. Proceeding to the next section.",
+    "Skipping referees as requested. Moving on."
+  ];
+}
+
+function getSkipLanguagesVariants() {
+  return [
+    "Okay, we’ll skip languages for now and continue.",
+    "Languages skipped. Let’s move forward with your CV.",
+    "No languages recorded. Proceeding to the next section.",
+    "Skipping languages as requested. Moving on."
+  ];
 }
 
 // === Charge Reminder Variants ===
@@ -586,8 +710,77 @@ function getCoverLetterReconsiderPromptVariants() {
     "Do you want to make changes to your cover letter before we proceed?"
   ];
 }
+// === Payment Proof Acknowledgement Variant Set ===
+function getPaymentProofAcknowledgementVariants() {
+  return [
+    "Thank you, your payment proof has been received and recorded successfully.",
+    "We’ve acknowledged your payment proof. Let’s proceed with your chosen service.",
+    "Payment proof confirmed. Your service request is now active.",
+    "Your payment proof has been verified. We’ll continue with the next step.",
+    "Payment proof received. Thank you for completing this step."
+  ];
+}
+
+// === Payment Reminder Lead-In Variants ===
+function getPaymentReminderLeadInVariants() {
+  return [
+    "Here’s your payment breakdown based on the service you selected:",
+    "Let me show you the charges for your chosen service:",
+    "Here’s a quick reminder of the payment details:",
+    "Let’s review the payment information for your service:",
+    "Here’s the cost summary for your selected option:"
+  ];
+}
+// === Charge Table ===
+const chargeTable = {
+  student: {
+    "cv": "MK6,000",
+    "editable cv": "MK10,000",
+    "cover letter": "MK5,000",
+    "resume + cover letter": "MK8,000"
+  },
+  "recent graduate": {
+    "cv": "MK7,000",
+    "editable cv": "MK10,000",
+    "cover letter": "MK5,000",
+    "resume + cover letter": "MK9,000"
+  },
+  "working professional": {
+    "cv": "MK8,000",
+    "editable cv": "MK12,000",
+    "cover letter": "MK7,000",
+    "resume + cover letter": "MK10,000",
+    "editable resume + cover letter": "MK12,000"
+  },
+  "nonworking professional": {
+    "cv": "MK8,000",
+    "editable cv": "MK10,000",
+    "cover letter": "MK7,000",
+    "resume + cover letter": "MK10,000",
+    "editable resume + cover letter": "MK12,000"
+  },
+  "returning client": {
+    "minor cv update": "MK3,000",
+    "major cv revision": "MK6,000",
+    "editable cv": "MK10,000",
+    "cover letter": "MK5,000",
+    "cv + cover letter update package": "MK7,000"
+  }
+};
+
+// === Helper: Get all charges for a category ===
+function getCategoryCharges(category) {
+  const cat = category ? category.toLowerCase() : "";
+  if (chargeTable[cat]) {
+    return Object.entries(chargeTable[cat])
+      .map(([service, price]) => `${service}: ${price}`)
+      .join(", ");
+  }
+  return "No charges available for this category.";
+}
 
 module.exports = {
+  getGreetingLeadInVariants
   getGreetingVariants,
   getCategoryVariants,
   getServiceSelectionVariants,
@@ -604,5 +797,22 @@ module.exports = {
   getPaymentProofVariants,
   getUpdateFallbackVariants,
   getServiceSummaryVariants,
-  getChargeReminderVariants
+  getServiceSummaryLeadInVariants,
+  getChargeReminderVariants,
+  getCvPaymentAgreementVariants,
+  getPaymentMethodDisagreeVariants,
+  getReconsiderPaymentMethodVariants,
+  getMissingEducationDetailsVariants,
+  getMissingCertificationsDetailsVariants,
+  getMissingExperienceExtrasDetailsVariants,
+  getMissingRefereeDetailsVariants,
+  getMissingLanguageDetailsVariants,
+  getSkipCertificationsVariants,
+  getSkipExperienceExtrasVariants,
+  getSkipRefereesVariants,
+  getSkipLanguagesVariants,
+  getPaymentProofAcknowledgementVariants,
+  getPaymentReminderLeadInVariants,
+  chargeTable,
+  getCategoryCharges
 };

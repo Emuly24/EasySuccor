@@ -9,6 +9,7 @@ const {
   getGreetingVariants,
   getCategoryVariants,
   getServiceSelectionVariants,
+  getCvPaymentAgreementVariants,
   getPaymentVariants,
   getPersonalInfoVariants,
   getEducationVariants,
@@ -20,7 +21,6 @@ const {
   getCoverLetterVariants,
   getPaymentMethodVariants,
   getPaymentProofVariants,
-  getUpdateFallbackVariants,
   getServiceSummaryVariants,
   getChargeReminderVariants,
   getPaymentProofDisagreeVariants,
@@ -29,11 +29,24 @@ const {
   getReconsiderFallbackVariants,
   getSkipEmploymentVariants,
   getCoverLetterAgreementVariants,
-  getpaymentAgreementVariants 
-  getCoverLetterReconsiderPromptVariants
-} = require('./masterVariants');
+  getCoverLetterReconsiderPromptVariants,
+  getPaymentMethodDisagreeVariants,
+  getReconsiderPaymentMethodVariants,
+  getMissingEducationDetailsVariants,
+  getMissingCertificationsDetailsVariants,
+  getMissingExperienceExtrasDetailsVariants,
+  getMissingRefereeDetailsVariants,
+  getMissingLanguageDetailsVariants,
+  getSkipCertificationsVariants,
+  getSkipExperienceExtrasVariants,
+  getSkipRefereesVariants,
+  getSkipLanguagesVariants,
+  getPaymentProofAcknowledgementVariants,
+  getPaymentReminderLeadInVariants,
+  getGreetingLeadInVariants,
+  getServiceSummaryLeadInVariants
+} = require("./masterVariants");
 
-// Import update flow variant sets
 const {
   getUpdatePersonalInfoVariants,
   getUpdateEducationVariants,
@@ -41,68 +54,135 @@ const {
   getUpdateEmploymentVariants,
   getUpdateExperienceExtrasVariants,
   getUpdateRefereesVariants,
-  getUpdateLanguagesInfoVariants,
+  getUpdateLanguagesVariants,
   getUpdateCoverLetterVariants,
   getUpdateFallbackVariants,
   getUpdateClarificationVariants,
-  getUpdateMenuVariants,
-  getRandomUpdateMenu
-} = require('./updateVariants');
+  getUpdateMenuVariants
+} = require("./updateVariants");
 
-  
-// === Helper to pick a random normal flow variant ===
+// === Build variant objects ===
+const variants = {
+  greeting: getGreetingVariants(),
+  greetingLeadIn: getGreetingLeadInVariants(),
+  category: getCategoryVariants(),
+  serviceSelection: getServiceSelectionVariants(),
+  cv_payment_agreement: getCvPaymentAgreementVariants(),
+  personalInfo: getPersonalInfoVariants(),
+  educationInfo: getEducationVariants(),
+  certificationsInfo: getCertificationsVariants(),
+  employmentInfo: getEmploymentVariants(),
+  experienceExtrasInfo: getExperienceExtrasVariants(),
+  refereesInfo: getRefereesVariants(),
+  languagesInfo: getLanguagesInfoVariants(),
+  coverLetterInfo: getCoverLetterVariants(),
+  paymentMethod: getPaymentMethodVariants(),
+  paymentProof: getPaymentProofVariants(),
+  serviceSummary: getServiceSummaryVariants(),
+  serviceSummaryLeadIn: getServiceSummaryLeadInVariants(),
+  paymentReminderLeadIn: getPaymentReminderLeadInVariants(),
+  defaultFallback: getDefaultFallbackVariants(),
+  reconsiderFallback: getReconsiderFallbackVariants(),
+  skipEmployment: getSkipEmploymentVariants(),
+  skipCertifications: getSkipCertificationsVariants(),
+  skipExperienceExtras: getSkipExperienceExtrasVariants(),
+  skipReferees: getSkipRefereesVariants(),
+  skipLanguages: getSkipLanguagesVariants(),
+  coverLetterAgreement: getCoverLetterAgreementVariants(),
+  coverLetterReconsiderPrompt: getCoverLetterReconsiderPromptVariants(),
+  paymentMethodDisagree: getPaymentMethodDisagreeVariants(),
+  reconsiderPaymentMethod: getReconsiderPaymentMethodVariants(),
+  paymentProofAcknowledgement: getPaymentProofAcknowledgementVariants(),
+  paymentProofDisagree: getPaymentProofDisagreeVariants(),
+  reconsiderPaymentProof: getReconsiderPaymentProofVariants(),
+  reconsiderUpdate: getUpdateFallbackVariants()
+};
+
+
+const updateVariants = {
+  personalInfo: getUpdatePersonalInfoVariants(),
+  educationInfo: getUpdateEducationVariants(),
+  certificationsInfo: getUpdateCertificationsVariants(),
+  employmentInfo: getUpdateEmploymentVariants(),
+  experienceExtrasInfo: getUpdateExperienceExtrasVariants(),
+  refereesInfo: getUpdateRefereesVariants(),
+  languagesInfo: getUpdateLanguagesVariants(),
+  coverLetterInfo: getUpdateCoverLetterVariants(),
+  updateFallback: getUpdateFallbackVariants(),
+  updateClarification: getUpdateClarificationVariants(),
+  updateMenu: getUpdateMenuVariants()
+};
+
+// === Helper to pick a random variant ===
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// === General Variant Selector for Normal Flow ===
+// === Normal Flow Variant Selector ===
 function getVariant(intentType, params = {}) {
-  const variants = {
-    greeting: getGreetingVariants(),
-    category: getCategoryVariants(),
-    serviceSelection: getServiceSelectionVariants(),
-    payment: getPaymentVariants(),
-    personalInfo: getPersonalInfoVariants(),
-    educationInfo: getEducationVariants(),
-    certificationsInfo: getCertificationsVariants(),
-    employmentInfo: getEmploymentVariants(),
-    experienceExtrasInfo: getExperienceExtrasVariants(),
-    refereesInfo: getRefereesVariants(),
-    languagesInfo: getLanguagesInfoVariants(),
-    coverLetterInfo: getCoverLetterVariants(),
-    paymentMethod: getPaymentMethodVariants(),
-    paymentProof: getPaymentProofVariants(),
-    updateFallback: getUpdateFallbackVariants(),
-    serviceSummary: getServiceSummaryVariants()
-  };
-
   const options = variants[intentType];
   if (!options) return "I’ve noted your details.";
 
-  // Handle nested categories
   if (intentType === "educationInfo") {
     const status = params.educationStatus || "Completed";
-    return getRandom(options.educationInfo[status]);
+    return getRandom(options[status]);
   }
   if (intentType === "employmentInfo") {
     const status = params.employmentStatus || "Past";
-    return getRandom(options.employmentInfo[status]);
+    return getRandom(options[status]);
   }
   if (intentType === "languagesInfo") {
     const proficiency = params.proficiency || "Basic";
-    return getRandom(options.languageInfo[proficiency]);
+    return getRandom(options[proficiency]);
   }
   if (intentType === "paymentMethod") {
     const method = params.paymentMethod || "PayLater";
     return getRandom(options[method]);
   }
-  //Universal Agreement Helper (Normal Flow)
-  function buildAgreementResponse(params, session, nextContext, agreeMessages, disagreeMessages, reconsiderPrompt) {
+
+  return Array.isArray(options) ? getRandom(options) : options;
+}
+
+// === Charge Helper ===
+const { chargeTable, getCategoryCharges } = require("./masterVariants");
+
+function getExactCharge(category, serviceChoice) {
+  const cat = category ? category.toLowerCase() : "";
+  const service = serviceChoice ? serviceChoice.toLowerCase() : "";
+
+  if (chargeTable[cat]) {
+    for (const key in chargeTable[cat]) {
+      if (service.includes(key)) {
+        return chargeTable[cat][key];
+      }
+    }
+  }
+  return "MK0"; // default fallback
+}
+
+
+// === Update Flow Variant Selector ===
+function getUpdateVariant(intentType, params = {}) {
+  const options = updateVariants[intentType];
+  if (!options) return "Update noted.";
+  return Array.isArray(options) ? getRandom(options) : options;
+}
+
+// === Update Clarification Helper ===
+function getUpdateClarification(serviceChoice) {
+  const options = updateVariants.updateClarification;
+  const choice = serviceChoice && options[serviceChoice.toLowerCase()]
+    ? serviceChoice.toLowerCase()
+    : "default";
+  return getRandom(options[choice]);
+}
+// === Universal Agreement Helper (Normal Flow) ===
+function buildAgreementResponse(params, session, nextContext, agreeMessages, disagreeMessages, reconsiderPrompt) {
   if (params.agreement === "Agree") {
     return {
       fulfillmentMessages: agreeMessages.map(msg => ({ text: { text: [msg] } })),
       outputContexts: nextContext
-        ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 1 }]
+        ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 3 }]
         : []
     };
   } else {
@@ -112,12 +192,13 @@ function getVariant(intentType, params = {}) {
         { text: { text: [reconsiderPrompt || "Would you like to reconsider and proceed?"] } }
       ],
       outputContexts: [
-        { name: `${session}/contexts/reconsider_agreement`, lifespanCount: 1 }
+        { name: `${session}/contexts/reconsider_agreement`, lifespanCount: 2 }
       ]
     };
   }
 }
-//Universal Reconsider Handler (Normal Flow)
+
+// === Universal Reconsider Handler (Normal Flow) ===
 function handleReconsider(params, session, restartContext, restartMessage) {
   if (params.reconsider === "Yes") {
     return {
@@ -125,7 +206,7 @@ function handleReconsider(params, session, restartContext, restartMessage) {
         { text: { text: [restartMessage || "Thank you for reconsidering. Let’s restart this section."] } }
       ],
       outputContexts: [
-        { name: `${session}/contexts/${restartContext}`, lifespanCount: 1 }
+        { name: `${session}/contexts/${restartContext}`, lifespanCount: 3 }
       ]
     };
   } else {
@@ -138,149 +219,46 @@ function handleReconsider(params, session, restartContext, restartMessage) {
     };
   }
 }
-// === General Variant Selector for Update Flow ===
-function getUpdateVariant(intentType, params = {}) {
-  const variants = {
-    personalInfo: getUpdatePersonalInfoVariants(),
-    educationInfo: getUpdateEducationVariants(),
-    certificationsInfo: getUpdateCertificationsVariants(),
-    employmentInfo: getUpdateEmploymentVariants(),
-    experienceExtrasInfo: getUpdateExperienceExtrasVariants(),
-    refereesInfo: getUpdateRefereesVariants(),
-    languagesInfo: getUpdateLanguagesVariants(),
-    coverLetterInfo: getUpdateCoverLetterVariants(),
-    updateFallback: getUpdateFallbackVariants()
-  };
 
-  const options = variants[intentType];
-  if (!options) return "Update noted.";
+// === Greeting ===
+case "Greeting":
+  const leadIn = getVariant("greetingLeadIn", params);
+  const greetingBlock = getVariant("greeting", params).greeting;
+  const chosenGreeting = greetingBlock[Math.floor(Math.random() * greetingBlock.length)];
 
-  return Array.isArray(options) ? getRandom(options) : options;
-}
-// Helper to pick a random variant
-function getVariant(variants) {
-  return variants[Math.floor(Math.random() * variants.length)];
-}
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: [leadIn] } },
+      ...chosenGreeting.map(msg => ({ text: { text: [msg] } }))
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_category`, lifespanCount: 3 }
+    ]
+  });
 
-
-//Update Flow Agreement Helper
-function buildUpdateAgreementResponse(params, session, nextContext, agreeMessages, disagreeMessages, reconsiderPrompt) {
-  if (params.agreement === "Agree") {
-    return {
-      fulfillmentMessages: agreeMessages.map(msg => ({ text: { text: [msg] } })),
-      outputContexts: nextContext
-        ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 1 }]
-        : []
-    };
-  } else {
-    return {
-      fulfillmentMessages: [
-        ...disagreeMessages.map(msg => ({ text: { text: [msg] } })),
-        { text: { text: [reconsiderPrompt || "Would you like to reconsider and proceed with this update?"] } }
-      ],
-      outputContexts: [
-        { name: `${session}/contexts/reconsider_update_agreement`, lifespanCount: 1 }
-      ]
-    };
-  }
-}
-function handleUpdateReconsider(params, session, restartContext, restartMessage) {
-  if (params.reconsider === "Yes") {
-    return {
-      fulfillmentMessages: [
-        { text: { text: [restartMessage || "Thank you for reconsidering. Let’s restart the update process."] } }
-      ],
-      outputContexts: [
-        { name: `${session}/contexts/${restartContext}`, lifespanCount: 1 }
-      ]
-    };
-  } else {
-    return {
-      fulfillmentMessages: [
-        { text: { text: ["Understood. We will not proceed with updates."] } },
-        { text: { text: ["Thank you for considering EasySuccor Update Service."] } }
-      ],
-      outputContexts: []
-    };
-  }
-}
-
-  // Default random pick
-  return Array.isArray(options) ? getRandom(options) : options;
-}
-module.exports = {
-  getRandom,
-  getVariant,
-  getUpdateVariant,
-  buildAgreementResponse,
-  handleReconsider,
-  buildUpdateAgreementResponse,
-  handleUpdateReconsider
-};
-
-
-// CV Category → Payment Agreement
-case "cv_category":
+case "CV_Category":
   const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
   const category = categoryRaw ? categoryRaw.toLowerCase() : "";
 
   const categoryLine = getVariant("category", { category });
+  const chargesList = getCategoryCharges(category);
+  const paymentPrompt = getVariant("cv_payment_agreement", params);
 
-  const responseCategory = {
+  return res.json({
     fulfillmentMessages: [
       { text: { text: [categoryLine] } },
-      { text: { text: ["Do you agree to proceed with these charges?"] } }
+      { text: { text: [`Here are your charges: ${chargesList}`] } },
+      { text: { text: [paymentPrompt] } }
     ],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 1 }
+      { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responseCategory);
-  
-  
-// === Service Summary ===
-case "Service_Summary":
-  const serviceChoice = params.serviceChoiceContext || "new_cv";
-  let summaryText = "";
+  });
 
-  if (serviceChoice.toLowerCase().includes("new cv")) {
-    summaryText = `
-CV Summary:
-👤 Personal Info: ${params.fullName || "Not provided"}
-🎓 Education: ${params.educationInfo || "Not provided"}
-📜 Certifications: ${params.certificationsInfo || "Not provided"}
-💼 Employment: ${params.employmentInfo || "Not provided"}
-🤝 Referees: ${params.refereesInfo || "Not provided"}
-    `;
-  } else if (serviceChoice.toLowerCase().includes("update")) {
-    summaryText = `
-Updated CV Summary:
-✏️ Section: ${params.updateSection || "Not specified"}
-📝 New Details: ${params.updateDetails || "Not provided"}
-    `;
-  } else if (serviceChoice.toLowerCase().includes("cover")) {
-    summaryText = `
-Cover Letter Summary:
-👤 Personal Info: ${params.fullName || "Not provided"}
-🎯 Target Role: ${params.jobTitle || "Not provided"}
-💡 Motivation: ${params.motivationStatement || "Not provided"}
-    `;
-  }
 
-  const responseSummary = {
-    fulfillmentMessages: [{ text: { text: [summaryText] } }],
-    outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_reminder`, lifespanCount: 1 }
-    ]
-  };
-
-  return res.json(responseSummary);
-
-  
-// === Service Selection Agreement ===
+// === CV Service Selection ===
 case "CV_ServiceSelection":
   const serviceChoice = (params.serviceType || "").toLowerCase();
-
   let nextContext = null;
   let messages = [];
 
@@ -290,7 +268,7 @@ case "CV_ServiceSelection":
       nextContext = "awaiting_payment_agreement";
       messages = [
         getVariant("serviceSelection", params),
-        "Before we continue with your CV, please confirm how you’d like to proceed with payment."
+        getVariant("cv_payment_agreement", params)
       ];
       break;
 
@@ -316,115 +294,95 @@ case "CV_ServiceSelection":
       break;
   }
 
-  const responseServiceSelection = {
+  return res.json({
     fulfillmentMessages: messages.map(msg => ({ text: { text: [msg] } })),
     outputContexts: nextContext
-      ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 1 }]
+      ? [{ name: `${session}/contexts/${nextContext}`, lifespanCount: 3 }]
       : []
-  };
+  });
 
-  return res.json(responseServiceSelection);
-
-// === Payment Agreement (Pay Now vs Pay Later vs Update vs Reconsider) ===
-case "cv_payment_agreement":
-  // Normalize parameter names
+// === CV Payment Agreement ===
+case "CV_PaymentAgreement":
   const agreementChoice = (params.agreement || params.payment_agreement || "").toLowerCase();
-  const serviceChoice = (params.serviceType || "").toLowerCase();
+  const serviceChoiceAgreement = (params.serviceType || "").toLowerCase();
 
   if (agreementChoice === "pay now" || agreementChoice === "yes") {
     return res.json({
-      fulfillmentMessages: [
-        { text: { text: ["Great, let’s proceed with payment proof."] } }
-      ],
+      fulfillmentMessages: [{ text: { text: ["Great, let’s proceed with payment proof."] } }],
       outputContexts: [
-        {
-          name: `${session}/contexts/awaiting_payment_proof`,
-          lifespanCount: 2,
-          parameters: { serviceChoice }
-        }
+        { name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 3, parameters: { serviceChoiceAgreement } }
       ]
     });
-
   } else if (agreementChoice === "pay later") {
     return res.json({
-      fulfillmentMessages: [
-        { text: { text: ["Alright, let’s capture your personal details first."] } }
-      ],
-      outputContexts: [
-        { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 2 }
-      ]
+      fulfillmentMessages: [{ text: { text: ["Alright, let’s capture your personal details first."] } }],
+      outputContexts: [{ name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 3 }]
     });
-
   } else if (agreementChoice === "update") {
     return res.json({
-      fulfillmentMessages: [
-        { text: { text: ["Got it, you’re in update mode. You can start updating any section."] } }
-      ],
-      outputContexts: [
-        { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
-      ]
+      fulfillmentMessages: [{ text: { text: ["Got it, you’re in update mode. You can start updating any section."] } }],
+      outputContexts: [{ name: `${session}/contexts/update_mode`, lifespanCount: 5 }]
     });
-
+  } else if (!agreementChoice) {
+    const prompt = getVariant("cv_payment_agreement", params);
+    return res.json({
+      fulfillmentMessages: [{ text: { text: [prompt] } }],
+      outputContexts: [{ name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 3 }]
+    });
   } else {
     return res.json({
-      fulfillmentMessages: [
-        { text: { text: ["Would you like to reconsider your choice before we proceed?"] } }
-      ],
-      outputContexts: [
-        { name: `${session}/contexts/reconsider_payment`, lifespanCount: 1 }
-      ]
+      fulfillmentMessages: [{ text: { text: ["Would you like to reconsider your choice before we proceed?"] } }],
+      outputContexts: [{ name: `${session}/contexts/reconsider_payment`, lifespanCount: 2 }]
     });
   }
-
-
-
 // === CV Update Menu ===
-case "CV_Update":
+case "CV_UpdateMenu":
   if (params.category === "Returning Client") {
     const updateMenuMessages = getUpdateMenuVariants();
+    const chosenMenu = updateMenuMessages[Math.floor(Math.random() * updateMenuMessages.length)];
+    const chargesList = getCategoryCharges("returning client"); // <-- new helper call
 
-    // Pick one variant style (e.g., first array of messages)
-    const responseUpdateMenu = {
-      fulfillmentMessages: updateMenuMessages[0].map(msg => ({ text: { text: [msg] } })),
+    return res.json({
+      fulfillmentMessages: [
+        ...chosenMenu.map(msg => ({ text: { text: [msg] } })),
+        { text: { text: [`Here are your update charges: ${chargesList}`] } } // <-- show full list
+      ],
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdateMenu);
-
+    });
   } else {
     const fallbackMessages = getUpdateFallbackVariants();
     const reconsiderMessages = getVariant("reconsiderUpdate", params);
 
-    const responseUpdateNewClient = {
+    return res.json({
       fulfillmentMessages: [
         ...fallbackMessages.map(msg => ({ text: { text: [msg] } })),
         ...reconsiderMessages.map(msg => ({ text: { text: [msg] } }))
       ],
       outputContexts: [
-        { name: `${session}/contexts/reconsider_update_agreement`, lifespanCount: 1 }
+        { name: `${session}/contexts/reconsider_update_agreement`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responseUpdateNewClient);
+    });
   }
-// === Universal Proceed to Payment (after updates) ===
-case "CV_Update_ProceedPayment":
-  const responseProceedPayment = {
+
+
+// === CV Update Proceed to Payment ===
+case "CV_UpdateProceedPayment":
+  return res.json({
     fulfillmentMessages: [
       { text: { text: ["Alright, you’ve finished updating your CV. Let’s proceed to payment."] } },
       { text: { text: ["Reminder: You’ll see the exact charge for your chosen update service at the payment step."] } }
     ],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 1 }
+      { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responseProceedPayment);
-
+  });
 
 // === Personal Info ===
-case "PersonalInfo":
+case "CV_PersonalInfo":
   if (params.updateMode) {
-    const responseUpdatePersonal = {
+    return res.json({
       fulfillmentMessages: [
         { text: { text: [getRandom(getUpdatePersonalInfoVariants())] } },
         { text: { text: ["Would you like to update another section or proceed to payment?"] } }
@@ -432,38 +390,34 @@ case "PersonalInfo":
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdatePersonal);
+    });
   } else {
-    const responsePersonalInfo = {
+    return res.json({
       fulfillmentMessages: [
         { text: { text: [getVariant("personalInfo", params)] } }
       ],
       outputContexts: [
-        { name: `${session}/contexts/awaiting_educational_info`, lifespanCount: 3 }
+        { name: `${session}/contexts/awaiting_education_info`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responsePersonalInfo);
+    });
   }
 
 // === Education Info ===
-case "Education_Info":
+case "CV_EducationInfo":
   if (params.updateMode) {
-    const responseUpdateEducation = {
+    return res.json({
       fulfillmentMessages: [
-        { text: { text: [getVariant("updateEducationInfo", params)] } },
+        { text: { text: [getRandom(getUpdateEducationVariants())] } },
         { text: { text: ["Would you like to update another section or proceed to payment?"] } }
       ],
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdateEducation);
+    });
   }
 
-  // Normal mode
   if (params.degree && params.institution) {
-    const responseEducationInfo = {
+    return res.json({
       fulfillmentMessages: [
         { text: { text: [getVariant("educationInfo", params)] } },
         { text: { text: ["Would you like to add another education record?"] } }
@@ -471,43 +425,31 @@ case "Education_Info":
       outputContexts: [
         { name: `${session}/contexts/awaiting_education_info`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responseEducationInfo);
+    });
   }
 
-  // Incomplete details
-  const responseMissingEducation = {
+  return res.json({
     fulfillmentMessages: [
       { text: { text: [getVariant("missingEducationDetails")] } }
     ],
     outputContexts: [
       { name: `${session}/contexts/awaiting_education_info`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responseMissingEducation);
-
-// Reconsider path
-case "cv_reconsider_education":
-  const responseReconsiderEducation = handleReconsider(params, session);
-  return res.json(responseReconsiderEducation);
-
-
+  });
 // === Certifications Info ===
-case "Certifications_Info":
+case "CV_CertificationsInfo":
   if (params.updateMode) {
-    const responseUpdateCertifications = {
+    return res.json({
       fulfillmentMessages: [
-        { text: { text: [getVariant("updateCertificationsInfo", params)] } },
+        { text: { text: [getRandom(getUpdateCertificationsVariants())] } },
         { text: { text: ["Would you like to update another section or proceed to payment?"] } }
       ],
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdateCertifications);
+    });
   }
 
-  // Skip option in normal flow
   if (params.skipCertifications === "Yes") {
     return res.json({
       fulfillmentMessages: [
@@ -519,7 +461,6 @@ case "Certifications_Info":
     });
   }
 
-  // Normal mode: complete details
   if (params.certificationName && params.year) {
     return res.json({
       fulfillmentMessages: [
@@ -532,7 +473,6 @@ case "Certifications_Info":
     });
   }
 
-  // Incomplete details
   return res.json({
     fulfillmentMessages: [
       { text: { text: [getVariant("missingCertificationsDetails")] } }
@@ -542,30 +482,21 @@ case "Certifications_Info":
     ]
   });
 
-// Reconsider path
-case "cv_reconsider_certifications":
-  const responseReconsiderCertifications = handleReconsider(params, session);
-  return res.json(responseReconsiderCertifications);
-
-
-case "Employment_Info":
+// === Employment Info ===
+case "CV_EmploymentInfo":
   if (params.skipEmployment === "Yes") {
     return res.json({
       fulfillmentMessages: getVariant("skipEmployment", params).map(msg => ({ text: { text: [msg] } })),
       outputContexts: [
-        { name: `${session}/contexts/awaiting_next_step`, lifespanCount: 2 }
+        { name: `${session}/contexts/awaiting_experience_extras`, lifespanCount: 3 }
       ]
     });
   }
 
-  // If details provided
   if (params.jobTitle && params.companyName) {
     return res.json({
       fulfillmentMessages: [
-        { text: { text: [
-          `Employment recorded: ${params.jobTitle} at ${params.companyName}, 
-          Duration: ${params.employmentYears || "N/A"}.`
-        ] } },
+        { text: { text: [`Employment recorded: ${params.jobTitle} at ${params.companyName}, Duration: ${params.employmentYears || "N/A"}.`] } },
         { text: { text: ["Would you like to add another employment record?"] } }
       ],
       outputContexts: [
@@ -574,15 +505,9 @@ case "Employment_Info":
     });
   }
 
-  // If incomplete details
   return res.json({
     fulfillmentMessages: [
-      { text: { text: [
-        "I didn’t catch all the details. Could you please provide:",
-        "- Your job title",
-        "- The company name",
-        "- The years you worked there"
-      ] } }
+      { text: { text: ["I didn’t catch all the details. Could you please provide: - Your job title - The company name - The years you worked there"] } }
     ],
     outputContexts: [
       { name: `${session}/contexts/awaiting_employment_info`, lifespanCount: 3 }
@@ -590,33 +515,30 @@ case "Employment_Info":
   });
 
 // === Experience Extras ===
-case "Experience_Extras":
+case "CV_ExperienceExtras":
   if (params.updateMode) {
-    const responseUpdateExtras = {
+    return res.json({
       fulfillmentMessages: [
-        { text: { text: [getVariant("updateExperienceExtrasInfo", params)] } },
+        { text: { text: [getRandom(getUpdateExperienceExtrasVariants())] } },
         { text: { text: ["Would you like to update another section or proceed to payment?"] } }
       ],
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdateExtras);
+    });
   }
 
-  // Skip option in normal flow
   if (params.skipExtras === "Yes") {
     return res.json({
       fulfillmentMessages: [
         { text: { text: [getVariant("skipExperienceExtras")] } }
       ],
       outputContexts: [
-        { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 1 }
+        { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 3 }
       ]
     });
   }
 
-  // Normal mode: complete details
   if (params.extraActivity && params.rolesPlayed && params.position) {
     return res.json({
       fulfillmentMessages: [
@@ -629,7 +551,6 @@ case "Experience_Extras":
     });
   }
 
-  // Incomplete details
   return res.json({
     fulfillmentMessages: [
       { text: { text: [getVariant("missingExperienceExtrasDetails")] } }
@@ -639,262 +560,225 @@ case "Experience_Extras":
     ]
   });
 
-// Reconsider path
-case "cv_reconsider_experience_extras":
-  const responseReconsiderExtras = handleReconsider(params, session);
-  return res.json(responseReconsiderExtras);
-
 // === Referees Info ===
-case "Referees_Info":
-  // Skip option
+case "CV_RefereesInfo":
   if (params.skipReferees === "Yes") {
     return res.json({
       fulfillmentMessages: getVariant("skipReferees"),
       outputContexts: [
-        { name: `${session}/contexts/awaiting_service_summary`, lifespanCount: 2 }
+        { name: `${session}/contexts/awaiting_languages_info`, lifespanCount: 3 }
       ]
     });
   }
 
-  // Update mode
-  if (params.updateMode === "Yes") {
-    const updateMessages = getVariant("updateRefereeInfo", params);
+  if (params.updateMode) {
     return res.json({
-      fulfillmentMessages: updateMessages.map(msg => ({ text: { text: [msg] } })),
+      fulfillmentMessages: getUpdateRefereesVariants().map(msg => ({ text: { text: [msg] } })),
       outputContexts: [
-        { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 2 }
+        { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
     });
   }
 
-  // Normal mode: complete details
   if (params.refereeName && params.refereeContact) {
-    const refereeMessages = getVariant("refereeInfo", params);
     return res.json({
-      fulfillmentMessages: refereeMessages.map(msg => ({ text: { text: [msg] } })),
+      fulfillmentMessages: getVariant("refereesInfo", params).map(msg => ({ text: { text: [msg] } })),
       outputContexts: [
-        { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 2 }
+        { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 3 }
       ]
     });
   }
 
-  // Incomplete details
   return res.json({
     fulfillmentMessages: getVariant("missingRefereeDetails"),
     outputContexts: [
-      { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 2 }
+      { name: `${session}/contexts/awaiting_referees_info`, lifespanCount: 3 }
     ]
   });
 
-/// === Languages ===
+// === Languages Info ===
 case "CV_LanguagesInfo":
   if (params.updateMode) {
-    const responseUpdateLanguages = {
+    return res.json({
       fulfillmentMessages: [
-        { text: { text: [getVariant("updateLanguagesInfo", params)] } },
+        { text: { text: [getRandom(getUpdateLanguagesVariants())] } },
         { text: { text: ["Would you like to update another section or proceed to payment?"] } }
       ],
       outputContexts: [
         { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
       ]
-    };
-    return res.json(responseUpdateLanguages);
+    });
   }
 
-  // Normal mode
   if (params.languageName && params.proficiencyLevel) {
-    const responseLanguageInfo = {
+    return res.json({
       fulfillmentMessages: [
-        { text: { text: [getVariant("languageInfo", params)] } },
+        { text: { text: [getVariant("languagesInfo", params)] } },
         { text: { text: ["Would you like to add another language?"] } }
       ],
       outputContexts: [
         { name: `${session}/contexts/awaiting_languages_info`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responseLanguageInfo);
+    });
   }
 
-  // Incomplete details
-  const responseMissingLanguage = {
+  return res.json({
     fulfillmentMessages: [
       { text: { text: [getVariant("missingLanguageDetails")] } }
     ],
     outputContexts: [
       { name: `${session}/contexts/awaiting_languages_info`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responseMissingLanguage);
-
-
-// === Universal Proceed to Payment ===
-case "CV_Update_ProceedPayment":
-  const responseProceedPayment = {
-    fulfillmentMessages: [
-      { text: { text: ["Alright, you’ve finished updating your CV. Let’s proceed to payment."] } },
-      { text: { text: ["Reminder: You’ll see the exact charge for your chosen update service at the payment step."] } }
-    ],
-    outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 2 }
-    ]
-  };
-  return res.json(responseProceedPayment);
-
-// === Fallback for Unsupported Update Requests ===
-case "CV_Update_Fallback":
-  const responseUpdateFallback = {
-    fulfillmentMessages: [
-      { text: { text: [getVariant("updateFallback")] } },
-      { text: { text: [
-        "You can update these sections:",
-        "1. Personal Info",
-        "2. Education",
-        "3. Certifications",
-        "4. Employment",
-        "5. Experience Extras",
-        "6. Referees",
-        "7. Languages",
-        "8. Cover Letter",
-        "Would you like to update one of these, or proceed to payment?"
-      ] } }
-    ],
-    outputContexts: [
-      { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
-    ]
-  };
-  return res.json(responseUpdateFallback);
-
-// Reconsider path
-case "cv_reconsider_update":
-  const responseReconsiderUpdate = handleReconsider(params, session);
-  return res.json(responseReconsiderUpdate);
-
+  });
 
 // === Cover Letter ===
 case "CV_CoverLetter":
   if (params.updateMode) {
-    // update flow
+    return res.json({
+      fulfillmentMessages: [
+        { text: { text: [getRandom(getUpdateCoverLetterVariants())] } },
+        { text: { text: ["Would you like to update another section or proceed to payment?"] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
+      ]
+    });
   } else if (params.coverLetterContent) {
-    // normal flow
+    return res.json({
+      fulfillmentMessages: [
+        { text: { text: [getVariant("coverLetterInfo", params)] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_service_summary`, lifespanCount: 3 }
+      ]
+    });
   } else {
-    // incomplete details
+    return res.json({
+      fulfillmentMessages: [
+        { text: { text: ["Could you please provide your cover letter content?"] } }
+      ],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_cover_letter_info`, lifespanCount: 3 }
+      ]
+    });
   }
-  return res.json(responseCoverLetter);
 
-// === Cover Letter Agreement ===
-case "cv_cover_letter_agreement":
-  const responseCoverAgreement = buildAgreementResponse(
-    params,
-    session,
-    "update_loop",
-    getVariant("coverLetterAgreement", params),
-    getVariant("coverLetterReconsiderPrompt", params)
-  );
-  return res.json(responseCoverAgreement);
-  // === Payment Reminder ===
-case "Payment_Reminder":
-  const charge = getExactCharge(params.category, params.serviceChoice);
+// === CV Service Summary ===
+case "CV_ServiceSummary":
+  const serviceChoiceSummary = params.serviceChoiceContext || "new_cv";
+  const summaries = getServiceSummaryVariants(params);
+
+  let summaryText = "";
+  if (serviceChoiceSummary.includes("new cv")) summaryText = summaries.newCVSummary[0];
+  else if (serviceChoiceSummary.includes("update")) summaryText = summaries.updateCVSummary[0];
+  else if (serviceChoiceSummary.includes("cover")) summaryText = summaries.coverLetterSummary[0];
+
+  const leadInSummary = getVariant("serviceSummaryLeadIn", params);
+
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: [leadInSummary] } },
+      { text: { text: [summaryText] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_payment_reminder`, lifespanCount: 3 }
+    ]
+  });
+
+// === CV Payment Reminder ===
+case "CV_PaymentReminder":
+  const charge = getExactCharge(params.category, params.serviceChoice); // <-- dynamic charge
   const reminderMessages = getChargeReminderVariants(params.serviceChoice, params.category, charge);
+  const leadInReminder = getVariant("paymentReminderLeadIn", params);
 
-  const responsePaymentReminder = {
-    fulfillmentMessages: reminderMessages.map(msg => ({ text: { text: [msg] } })),
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: [leadInReminder] } },
+      { text: { text: [`Your charge for this service is ${charge}.`] } }, // <-- show charge
+      ...reminderMessages.map(msg => ({ text: { text: [msg] } }))
+    ],
     outputContexts: [
       { name: `${session}/contexts/awaiting_payment_method`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responsePaymentReminder);
+  });
 
-
-// Payment Method → Awaiting Proof
 // === CV Payment Method ===
 case "CV_PaymentMethod":
-  const charge = getExactCharge(params.category, params.serviceChoice);
-  const reminderVariants = getChargeReminderVariants(params.serviceChoice, params.category, charge);
-  const clarification = getUpdateClarification(params.serviceChoice);
+  const chargeMethod = getExactCharge(params.category, params.serviceChoice); // <-- dynamic charge
+  const reminderVariants = getChargeReminderVariants(params.serviceChoice, params.category, chargeMethod);
   const paymentMethodMessages = getVariant("paymentMethod", params);
 
   if (params.agreement === "Agree") {
     const messages = [
+      { text: { text: [`The charge for your selected service is ${chargeMethod}.`] } }, // <-- show charge
       ...reminderVariants.map(msg => ({ text: { text: [msg] } })),
+      { text: { text: [getUpdateClarification(params.serviceChoice)] } },
+      { text: { text: [paymentMethodMessages] } }
     ];
 
-    if (clarification) {
-      messages.push({ text: { text: [clarification] } });
-    }
-
-    messages.push({ text: { text: [paymentMethodMessages] } });
-
-    const responsePaymentMethod = {
+    return res.json({
       fulfillmentMessages: messages,
       outputContexts: [
-        { name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 2 }
+        { name: `${session}/contexts/awaiting_payment_proof`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responsePaymentMethod);
-
+    });
   } else {
     const disagreeMessages = getVariant("paymentMethodDisagree", params);
     const reconsiderMessages = getVariant("reconsiderPaymentMethod", params);
 
-    const responseDisagree = {
+    return res.json({
       fulfillmentMessages: [
         ...disagreeMessages.map(msg => ({ text: { text: [msg] } })),
         ...reconsiderMessages.map(msg => ({ text: { text: [msg] } }))
       ],
       outputContexts: [
-        { name: `${session}/contexts/reconsider_payment_method`, lifespanCount: 2 }
+        { name: `${session}/contexts/reconsider_payment_method`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responseDisagree);
+    });
   }
 
-
-// Final Payment Proof
-case "cv_payment_proof":
+// === CV Payment Proof ===
+case "CV_PaymentProof":
   const chosenServiceContext = params.serviceChoiceContext || "awaiting_service_selection";
 
   if (params.agreement === "Agree") {
     const proofMessages = getVariant("paymentProofAcknowledgement", params);
-    const responsePaymentProof = {
+
+    return res.json({
       fulfillmentMessages: proofMessages.map(msg => ({ text: { text: [msg] } })),
       outputContexts: [
-        { name: `${session}/contexts/${chosenServiceContext}`, lifespanCount: 2 }
+        { name: `${session}/contexts/${chosenServiceContext}`, lifespanCount: 3 }
       ]
-    };
-    return res.json(responsePaymentProof);
-
+    });
   } else {
     const disagreeMessages = getVariant("paymentProofDisagree", params);
     const reconsiderMessages = getVariant("reconsiderPaymentProof", params);
 
-    const responseDisagree = {
+    return res.json({
       fulfillmentMessages: [
         ...disagreeMessages.map(msg => ({ text: { text: [msg] } })),
         ...reconsiderMessages.map(msg => ({ text: { text: [msg] } }))
       ],
       outputContexts: [
-        { name: `${session}/contexts/reconsider_payment_proof`, lifespanCount: 1 }
+        { name: `${session}/contexts/reconsider_payment_proof`, lifespanCount: 2 }
       ]
-    };
-    return res.json(responseDisagree);
+    });
   }
 
 // === Default Fallback ===
 default:
-  const fallbackMessages = getVariant("defaultFallback", params);
-  const reconsiderMessages = getVariant("reconsiderFallback", params);
+  const fallbackMessages = getRandom(getDefaultFallbackVariants());
+  const reconsiderMessages = getRandom(getReconsiderFallbackVariants());
 
-  const responseFallback = {
+  return res.json({
     fulfillmentMessages: [
-      ...fallbackMessages.map(msg => ({ text: { text: [msg] } })),
-      ...reconsiderMessages.map(msg => ({ text: { text: [msg] } }))
+      { text: { text: [fallbackMessages] } },
+      { text: { text: [reconsiderMessages] } }
     ],
     outputContexts: [
-      { name: `${session}/contexts/reconsider_fallback`, lifespanCount: 2 }
+      { name: `${session}/contexts/reconsider_fallback`, lifespanCount: 3 }
     ]
-  };
-  return res.json(responseFallback);
-
+  });
 
 
 // Error handling
