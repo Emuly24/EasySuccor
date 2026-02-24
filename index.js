@@ -232,9 +232,10 @@ case "Greeting":
       ...chosenGreeting.map(msg => ({ text: { text: [msg] } }))
     ],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_category`, lifespanCount: 3 }
+      { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 } // <-- corrected
     ]
   });
+
 
 // === CV Category ===
 case "CV_Category":
