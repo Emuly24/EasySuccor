@@ -236,24 +236,25 @@ case "Greeting":
     ]
   });
 
+// === CV Category ===
 case "CV_Category":
   const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
   const category = categoryRaw ? categoryRaw.toLowerCase() : "";
 
   const categoryLine = getVariant("category", { category });
   const chargesList = getCategoryCharges(category);
-  const paymentPrompt = getVariant("cv_payment_agreement", params);
 
   return res.json({
     fulfillmentMessages: [
       { text: { text: [categoryLine] } },
       { text: { text: [`Here are your charges: ${chargesList}`] } },
-      { text: { text: [paymentPrompt] } }
+      { text: { text: ["Please select the service you’d like (New CV, Editable CV, CV Update, or Cover Letter)."] } }
     ],
     outputContexts: [
-      { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 3 }
+      { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 3 } // <-- changed
     ]
   });
+
 
 
 // === CV Service Selection ===
@@ -306,6 +307,18 @@ case "CV_PaymentAgreement":
   const agreementChoice = (params.agreement || params.payment_agreement || "").toLowerCase();
   const serviceChoiceAgreement = (params.serviceType || "").toLowerCase();
 
+  // 1. Handle empty agreement first
+  if (!agreementChoice) {
+    const prompt = getVariant("cv_payment_agreement", params);
+    return res.json({
+      fulfillmentMessages: [{ text: { text: [prompt] } }],
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 3 }
+      ]
+    });
+  }
+
+  // 2. Handle valid agreement choices
   if (agreementChoice === "pay now" || agreementChoice === "yes") {
     return res.json({
       fulfillmentMessages: [{ text: { text: ["Great, let’s proceed with payment proof."] } }],
@@ -316,25 +329,30 @@ case "CV_PaymentAgreement":
   } else if (agreementChoice === "pay later") {
     return res.json({
       fulfillmentMessages: [{ text: { text: ["Alright, let’s capture your personal details first."] } }],
-      outputContexts: [{ name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 3 }]
+      outputContexts: [
+        { name: `${session}/contexts/awaiting_personal_info`, lifespanCount: 3 }
+      ]
     });
   } else if (agreementChoice === "update") {
     return res.json({
       fulfillmentMessages: [{ text: { text: ["Got it, you’re in update mode. You can start updating any section."] } }],
-      outputContexts: [{ name: `${session}/contexts/update_mode`, lifespanCount: 5 }]
-    });
-  } else if (!agreementChoice) {
-    const prompt = getVariant("cv_payment_agreement", params);
-    return res.json({
-      fulfillmentMessages: [{ text: { text: [prompt] } }],
-      outputContexts: [{ name: `${session}/contexts/awaiting_payment_agreement`, lifespanCount: 3 }]
-    });
-  } else {
-    return res.json({
-      fulfillmentMessages: [{ text: { text: ["Would you like to reconsider your choice before we proceed?"] } }],
-      outputContexts: [{ name: `${session}/contexts/reconsider_payment`, lifespanCount: 2 }]
+      outputContexts: [
+        { name: `${session}/contexts/update_mode`, lifespanCount: 5 }
+      ]
     });
   }
+
+  // 3. Handle disagreement or unrecognized input
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: ["We understand you don’t agree to the charges. Unfortunately, we cannot proceed further."] } },
+      { text: { text: ["Thank you for considering EasySuccor."] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/reconsider_payment`, lifespanCount: 2 }
+    ]
+  });
+
 // === CV Update Menu ===
 case "CV_UpdateMenu":
   if (params.category === "Returning Client") {
