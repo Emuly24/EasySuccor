@@ -211,13 +211,13 @@ function getPaymentVariants() {
   };
 }
 // === Personal Info Variants ===
-function getPersonalInfoVariants() {
+function getPersonalInfoVariants(params = {}) {
   return {
     personalInfo: [
-      `I’ve noted your personal details: Name ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`,
-      `So far, you’ve shared: Name ${params.firstName} ${params.lastName}, Contact ${params.phoneNumber}, Email ${params.email}.`,
-      `Your personal information is: ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`,
-      `Okay, I’ve recorded your details: Name ${params.firstName} ${params.lastName}, Phone ${params.phoneNumber}, Email ${params.email}.`
+      `I’ve noted your personal details: Name ${params.firstName || "N/A"} ${params.lastName || ""}, Phone ${params.phoneNumber || "N/A"}, Email ${params.email || "N/A"}.`,
+      `So far, you’ve shared: Name ${params.firstName || "N/A"} ${params.lastName || ""}, Contact ${params.phoneNumber || "N/A"}, Email ${params.email || "N/A"}.`,
+      `Your personal information is: ${params.firstName || "N/A"} ${params.lastName || ""}, Phone ${params.phoneNumber || "N/A"}, Email ${params.email || "N/A"}.`,
+      `Okay, I’ve recorded your details: Name ${params.firstName || "N/A"} ${params.lastName || ""}, Phone ${params.phoneNumber || "N/A"}, Email ${params.email || "N/A"}.`
     ],
     updatePersonalInfo: [
       "Personal info updated successfully.",
@@ -238,20 +238,20 @@ function getPersonalInfoVariants() {
 }
 
 // === Education Variants ===
-function getEducationVariants() {
+function getEducationVariants(params = {}) {
   return {
     educationInfo: {
       Completed: [
-        `Your qualification is ${params.qualification} in ${params.fieldOfStudy}, completed at ${params.institutionName}.`,
-        `You graduated with ${params.qualification} in ${params.fieldOfStudy} from ${params.institutionName}.`,
-        `I’ve noted your completed studies: ${params.qualification}, Field: ${params.fieldOfStudy}.`,
-        `So far, your education includes ${params.qualification} in ${params.fieldOfStudy}, Graduation: ${params.graduationDate}.`
+        `Your qualification is ${params.qualification || "N/A"} in ${params.fieldOfStudy || "N/A"}, completed at ${params.institutionName || "N/A"}.`,
+        `You graduated with ${params.qualification || "N/A"} in ${params.fieldOfStudy || "N/A"} from ${params.institutionName || "N/A"}.`,
+        `I’ve noted your completed studies: ${params.qualification || "N/A"}, Field: ${params.fieldOfStudy || "N/A"}.`,
+        `So far, your education includes ${params.qualification || "N/A"} in ${params.fieldOfStudy || "N/A"}, Graduation: ${params.graduationDate || "N/A"}.`
       ],
       Ongoing: [
-        `You’re currently pursuing ${params.qualification} in ${params.fieldOfStudy} at ${params.institutionName}.`,
-        `I’ve noted your ongoing studies: ${params.qualification}, Field: ${params.fieldOfStudy}.`,
-        `Your current education is ${params.qualification} in ${params.fieldOfStudy}, expected graduation: ${params.estimatedGraduationDate}.`,
-        `So far, you’re studying ${params.qualification} at ${params.institutionName}.`
+        `You’re currently pursuing ${params.qualification || "N/A"} in ${params.fieldOfStudy || "N/A"} at ${params.institutionName || "N/A"}.`,
+        `I’ve noted your ongoing studies: ${params.qualification || "N/A"}, Field: ${params.fieldOfStudy || "N/A"}.`,
+        `Your current education is ${params.qualification || "N/A"} in ${params.fieldOfStudy || "N/A"}, expected graduation: ${params.estimatedGraduationDate || "N/A"}.`,
+        `So far, you’re studying ${params.qualification || "N/A"} at ${params.institutionName || "N/A"}.`
       ]
     },
     updateEducationInfo: [
@@ -277,14 +277,15 @@ function getEducationVariants() {
   };
 }
 
+
 // === Certifications Variants ===
-function getCertificationsVariants() {
+function getCertificationsVariants(params = {}) {
   return {
     certificationsInfo: [
-      `Certification recorded: ${params.certificateName}, issued by ${params.issuingOrganization}.`,
-      `You’ve completed ${params.certificateName} from ${params.issuingOrganization}.`,
-      `I’ve noted your certification: ${params.certificateName}, Date: ${params.completionDate || "N/A"}.`,
-      `Your certification details are: ${params.certificateName}, Organization: ${params.issuingOrganization}.`
+      `Certification recorded: ${params.certificateName || "N/A"}, issued by ${params.issuingOrganization || "N/A"}.`,
+      `You’ve completed ${params.certificateName || "N/A"} from ${params.issuingOrganization || "N/A"}.`,
+      `I’ve noted your certification: ${params.certificateName || "N/A"}, Date: ${params.completionDate || "N/A"}.`,
+      `Your certification details are: ${params.certificateName || "N/A"}, Organization: ${params.issuingOrganization || "N/A"}.`
     ],
     updateCertificationsInfo: [
       "Certification details updated successfully.",
@@ -309,21 +310,22 @@ function getCertificationsVariants() {
   };
 }
 
+
 // === Employment Variants ===
-function getEmploymentVariants() {
+function getEmploymentVariants(params = {}) {
   return {
     employmentInfo: {
       Current: [
-        `You are currently working as ${params.jobTitle} at ${params.companyName}.`,
-        `Your present role is ${params.jobTitle} with ${params.companyName}.`,
-        `I’ve noted your current employment: ${params.jobTitle}, Company: ${params.companyName}.`,
-        `So far, you’re employed as ${params.jobTitle} at ${params.companyName}.`
+        `You are currently working as ${params.jobTitle || "N/A"} at ${params.companyName || "N/A"}.`,
+        `Your present role is ${params.jobTitle || "N/A"} with ${params.companyName || "N/A"}.`,
+        `I’ve noted your current employment: ${params.jobTitle || "N/A"}, Company: ${params.companyName || "N/A"}.`,
+        `So far, you’re employed as ${params.jobTitle || "N/A"} at ${params.companyName || "N/A"}.`
       ],
       Past: [
-        `You previously worked as ${params.jobTitle} at ${params.companyName}.`,
-        `Your past role was ${params.jobTitle} with ${params.companyName}.`,
-        `I’ve recorded your former employment: ${params.jobTitle}, Company: ${params.companyName}.`,
-        `So far, your work history includes ${params.jobTitle} at ${params.companyName}.`
+        `You previously worked as ${params.jobTitle || "N/A"} at ${params.companyName || "N/A"}.`,
+        `Your past role was ${params.jobTitle || "N/A"} with ${params.companyName || "N/A"}.`,
+        `I’ve recorded your former employment: ${params.jobTitle || "N/A"}, Company: ${params.companyName || "N/A"}.`,
+        `So far, your work history includes ${params.jobTitle || "N/A"} at ${params.companyName || "N/A"}.`
       ]
     },
     updateEmploymentInfo: [
@@ -343,8 +345,9 @@ function getEmploymentVariants() {
     ]
   };
 }
+
 // === Experience Extras Variants ===
-function getExperienceExtrasVariants() {
+function getExperienceExtrasVariants(params = {}){
   return {
     experienceExtrasInfo: [
       `Experience recorded: ${params.extraActivity} at ${params.organization || "N/A"}, Role: ${params.rolesPlayed}, Position: ${params.position}, Year: ${params.year || "N/A"}.`,
@@ -375,7 +378,7 @@ function getExperienceExtrasVariants() {
 }
 
 // === Referees Variants ===
-function getRefereesVariants() {
+function getRefereesVariants(params = {}) {
   return {
     refereeInfo: [
       `Referee added: ${params.refereeName}, Position: ${params.refereePosition || "N/A"}, Email: ${params.refereeEmail}.`,
@@ -407,7 +410,7 @@ function getRefereesVariants() {
 }
 
 // === Languages Variants ===
-function getLanguagesInfoVariants() {
+function getLanguagesInfoVariants(params = {}) {
   return {
     languageInfo: {
       Fluent: [
@@ -453,7 +456,7 @@ function getLanguagesInfoVariants() {
 }
 
 // === Cover Letter Variants ===
-function getCoverLetterVariants() {
+function getCoverLetterVariants(params = {}) {
   return {
     coverLetterInfo: [
       `Cover letter vacancy captured: Position ${params.positionApplied}, Company ${params.companyApplied}.`,
@@ -489,7 +492,7 @@ function getCoverLetterVariants() {
   };
 }
 // === Payment Method Variants ===
-function getPaymentMethodVariants() {
+function getPaymentMethodVariants(params = {}) {
   return {
     AirtelMoney: [
       `You’ve chosen Airtel Money as your payment option.`,
@@ -519,7 +522,7 @@ function getPaymentMethodVariants() {
 }
 
 // === Payment Proof Variants ===
-function getPaymentProofVariants() {
+function getPaymentProofVariants(params = {}) {
   return {
     paymentProof: [
       `Payment proof received: ${params.paymentProof}.`,
@@ -531,7 +534,7 @@ function getPaymentProofVariants() {
 }
 
 // === CV Update Fallback Variants ===
-function getUpdateFallbackVariants() {
+function getUpdateFallbackVariants(params = {}) {
   return {
     updateFallback: [
       "I’m sorry, that section isn’t available for updates.",
@@ -547,7 +550,7 @@ function getUpdateFallbackVariants() {
   };
 }
 // === Service Summary Lead-In Variants ===
-function getServiceSummaryLeadInVariants() {
+function getServiceSummaryLeadInVariants(params = {}) {
   return [
     "Here’s a summary of the details we’ve captured so far:",
     "Let me show you a quick summary of your information:",
@@ -558,7 +561,7 @@ function getServiceSummaryLeadInVariants() {
 }
 
 // === Service Summary Variants ===
-function getServiceSummaryVariants(params) {
+function getServiceSummaryVariants(params = {}) {
   return {
     newCVSummary: [
       `CV Summary:\n👤 Personal Info: ${params.fullName || "Not provided"}\n🎓 Education: ${params.educationInfo || "Not provided"}\n📜 Certifications: ${params.certificationsInfo || "Not provided"}\n💼 Employment: ${params.employmentInfo || "Not provided"}\n🤝 Referees: ${params.refereesInfo || "Not provided"}`
@@ -574,7 +577,7 @@ function getServiceSummaryVariants(params) {
 
 // === Missing Details Variant Sets ===
 
-function getMissingEducationDetailsVariants() {
+function getMissingEducationDetailsVariants(params = {}) {
   return [
     "I didn’t catch all your education details. Could you please provide your degree, institution, and completion year?",
     "Your education record seems incomplete. Kindly share your degree, school name, and year of completion.",
@@ -583,7 +586,7 @@ function getMissingEducationDetailsVariants() {
   ];
 }
 
-function getMissingCertificationsDetailsVariants() {
+function getMissingCertificationsDetailsVariants(params = {}) {
   return [
     "I didn’t get all your certification details. Could you share the certification name and year?",
     "Your certification record seems incomplete. Please provide the certification name and the year obtained.",
@@ -592,7 +595,7 @@ function getMissingCertificationsDetailsVariants() {
   ];
 }
 
-function getMissingExperienceExtrasDetailsVariants() {
+function getMissingExperienceExtrasDetailsVariants(params = {}) {
   return [
     "I didn’t catch all the details of your volunteering or project contribution. Could you provide the activity, role, and position?",
     "Your experience extras record seems incomplete. Please share the activity name, your role, and position held.",
@@ -601,7 +604,7 @@ function getMissingExperienceExtrasDetailsVariants() {
   ];
 }
 
-function getMissingRefereeDetailsVariants() {
+function getMissingRefereeDetailsVariants(params = {}) {
   return [
     "I didn’t catch all your referee details. Could you provide the referee’s name and contact information?",
     "Your referee record seems incomplete. Please share the referee’s name and contact details.",
@@ -610,7 +613,7 @@ function getMissingRefereeDetailsVariants() {
   ];
 }
 
-function getMissingLanguageDetailsVariants() {
+function getMissingLanguageDetailsVariants(params = {}) {
   return [
     "I didn’t catch all your language details. Could you provide the language name and your proficiency level?",
     "Your language record seems incomplete. Please share the language name and how proficient you are.",
@@ -621,7 +624,7 @@ function getMissingLanguageDetailsVariants() {
 
 // === Skip Details Variant Sets ===
 
-function getSkipCertificationsVariants() {
+function getSkipCertificationsVariants(params = {}) {
   return [
     "Alright, we’ll skip certifications for now and move forward.",
     "Certifications skipped. Let’s continue with your CV details.",
@@ -630,7 +633,7 @@ function getSkipCertificationsVariants() {
   ];
 }
 
-function getSkipExperienceExtrasVariants() {
+function getSkipExperienceExtrasVariants(params = {}) {
   return [
     "Okay, we’ll skip experience extras for now and continue.",
     "Experience extras skipped. Let’s move forward with your CV.",
@@ -639,7 +642,7 @@ function getSkipExperienceExtrasVariants() {
   ];
 }
 
-function getSkipRefereesVariants() {
+function getSkipRefereesVariants(params = {}) {
   return [
     "Alright, we’ll skip referees for now and move forward.",
     "Referees skipped. Let’s continue with your CV details.",
@@ -648,7 +651,7 @@ function getSkipRefereesVariants() {
   ];
 }
 
-function getSkipLanguagesVariants() {
+function getSkipLanguagesVariants(params = {}) {
   return [
     "Okay, we’ll skip languages for now and continue.",
     "Languages skipped. Let’s move forward with your CV.",
@@ -665,125 +668,135 @@ function getChargeReminderVariants(serviceChoice, category, charge) {
     `The amount payable for (${serviceChoice}) under ${category} is ${charge}.`,
     `You’ll need to pay ${charge} for (${serviceChoice}) under ${category}.`
   ];
-  function getPaymentProofDisagreeVariants() {
+}
+
+// === Payment Proof Disagree Variants ===
+function getPaymentProofDisagreeVariants(params = {}) {
   return [
     "We couldn’t validate your payment proof.",
     "The payment proof seems incomplete or invalid."
   ];
 }
 
-function getReconsiderPaymentProofVariants() {
+// === Reconsider Payment Proof Variants ===
+function getReconsiderPaymentProofVariants(params = {}) {
   return [
     "Would you like to reconsider and re‑upload your payment proof?",
     "Please try again — would you like to provide another proof?"
   ];
 }
+
+// === Charge Table ===
+const chargeTable = {
+  student: {
+    "new cv": "MK10,000",
+    "editable cv": "MK12,000",
+    "cv update": "MK8,000",
+    "cover letter": "MK5,000"
+  },
+  recentgraduate: {
+    "new cv": "MK12,000",
+    "editable cv": "MK14,000",
+    "cv update": "MK9,000",
+    "cover letter": "MK6,000"
+  },
+  workingprofessional: {
+    "new cv": "MK15,000",
+    "editable cv": "MK18,000",
+    "cv update": "MK12,000",
+    "cover letter": "MK7,000"
+  },
+  nonworkingprofessional: {
+    "new cv": "MK10,000",
+    "editable cv": "MK12,000",
+    "cv update": "MK8,000",
+    "cover letter": "MK5,000"
+  },
+  returningclient: {
+    "new cv": "MK8,000",
+    "editable cv": "MK10,000",
+    "cv update": "MK6,000",
+    "cover letter": "MK4,000"
+  }
+};
+
+// === Helper to get charges for a category ===
+function getCategoryCharges(category) {
+  const cat = category ? category.toLowerCase().replace(/\s+/g, "") : "";
+  if (chargeTable[cat]) {
+    return Object.entries(chargeTable[cat])
+      .map(([service, charge]) => `${service}: ${charge}`)
+      .join(", ");
+  }
+  return "No charges available for this category.";
+}
 function getDefaultFallbackVariants() {
   return [
-    "Sorry, I didn’t catch that. Could you rephrase?",
-    "I didn’t quite understand. Could you try again?"
+    "I didn’t quite catch that. Could you rephrase?",
+    "Sorry, I didn’t understand. Please try again.",
+    "I’m not sure I got that — could you clarify?"
   ];
 }
 
 function getReconsiderFallbackVariants() {
   return [
-    "Would you like to reconsider and continue?",
-    "Let’s try again — would you like to proceed?"
+    "Would you like to reconsider and try again?",
+    "Do you want to rephrase your request?",
+    "Shall we restart this step?"
   ];
 }
+
 function getSkipEmploymentVariants() {
   return [
-    "Skipping employment section. Let’s move forward.",
-    "No employment details noted. Proceeding to the next step."
+    "Alright, we’ll skip employment history for now.",
+    "Employment section skipped. Let’s continue.",
+    "No employment details recorded. Moving ahead."
   ];
 }
+
 function getCoverLetterAgreementVariants() {
   return [
-    "Your cover letter details have been noted. Let’s continue.",
-    "Cover letter recorded successfully. Moving forward."
+    "Thank you for agreeing to provide your cover letter details.",
+    "I appreciate your confirmation to include cover letter information.",
+    "Great, we’ll proceed with your cover letter details."
   ];
 }
 
 function getCoverLetterReconsiderPromptVariants() {
   return [
-    "Would you like to reconsider and revise your cover letter?",
-    "Do you want to make changes to your cover letter before we proceed?"
-  ];
-}
-// === Payment Proof Acknowledgement Variant Set ===
-function getPaymentProofAcknowledgementVariants() {
-  return [
-    "Thank you, your payment proof has been received and recorded successfully.",
-    "We’ve acknowledged your payment proof. Let’s proceed with your chosen service.",
-    "Payment proof confirmed. Your service request is now active.",
-    "Your payment proof has been verified. We’ll continue with the next step.",
-    "Payment proof received. Thank you for completing this step."
+    "We cannot proceed without your cover letter details. Would you like to reconsider?",
+    "Cover letter is important. Do you want to continue with it?",
+    "Would you like to provide your cover letter details after all?"
   ];
 }
 
-// === Payment Reminder Lead-In Variants ===
+function getPaymentProofAcknowledgementVariants(params = {}) {
+  return [
+    `Payment proof received: ${params.paymentProof || "N/A"}. Thank you — we’ll validate it shortly.`,
+    `Got it, we’ve recorded your payment confirmation: ${params.paymentProof || "N/A"}. Meanwhile, let’s continue with your chosen service.`,
+    `Your payment details are noted: ${params.paymentProof || "N/A"}. EasySuccor will verify soon, and we’ll proceed with your service.`,
+    `Alright, proof of payment captured: ${params.paymentProof || "N/A"}. Thank you — let’s move forward with your service.`
+  ];
+}
+
 function getPaymentReminderLeadInVariants() {
   return [
-    "Here’s your payment breakdown based on the service you selected:",
-    "Let me show you the charges for your chosen service:",
-    "Here’s a quick reminder of the payment details:",
-    "Let’s review the payment information for your service:",
-    "Here’s the cost summary for your selected option:"
+    "Here’s a quick payment reminder:",
+    "Let’s go over the payment details:",
+    "Reminder: payment information is important before we continue.",
+    "Just a quick note on charges:",
+    "Before proceeding, please review the payment reminder."
   ];
 }
-// === Charge Table ===
-const chargeTable = {
-  student: {
-    "cv": "MK6,000",
-    "editable cv": "MK10,000",
-    "cover letter": "MK5,000",
-    "resume + cover letter": "MK8,000"
-  },
-  "recent graduate": {
-    "cv": "MK7,000",
-    "editable cv": "MK10,000",
-    "cover letter": "MK5,000",
-    "resume + cover letter": "MK9,000"
-  },
-  "working professional": {
-    "cv": "MK8,000",
-    "editable cv": "MK12,000",
-    "cover letter": "MK7,000",
-    "resume + cover letter": "MK10,000",
-    "editable resume + cover letter": "MK12,000"
-  },
-  "nonworking professional": {
-    "cv": "MK8,000",
-    "editable cv": "MK10,000",
-    "cover letter": "MK7,000",
-    "resume + cover letter": "MK10,000",
-    "editable resume + cover letter": "MK12,000"
-  },
-  "returning client": {
-    "minor cv update": "MK3,000",
-    "major cv revision": "MK6,000",
-    "editable cv": "MK10,000",
-    "cover letter": "MK5,000",
-    "cv + cover letter update package": "MK7,000"
-  }
-};
 
-// === Helper: Get all charges for a category ===
-function getCategoryCharges(category) {
-  const cat = category ? category.toLowerCase() : "";
-  if (chargeTable[cat]) {
-    return Object.entries(chargeTable[cat])
-      .map(([service, price]) => `${service}: ${price}`)
-      .join(", ");
-  }
-  return "No charges available for this category.";
-}
 
+// === Export Block ===
 module.exports = {
-  getGreetingLeadInVariants
+  getGreetingLeadInVariants,
   getGreetingVariants,
   getCategoryVariants,
   getServiceSelectionVariants,
+  getCvPaymentAgreementVariants,
   getPaymentVariants,
   getPersonalInfoVariants,
   getEducationVariants,
@@ -791,17 +804,18 @@ module.exports = {
   getEmploymentVariants,
   getExperienceExtrasVariants,
   getRefereesVariants,
-  getLanguagesVariants,
+  getLanguagesInfoVariants,   // fixed name
   getCoverLetterVariants,
   getPaymentMethodVariants,
   getPaymentProofVariants,
-  getUpdateFallbackVariants,
   getServiceSummaryVariants,
   getServiceSummaryLeadInVariants,
   getChargeReminderVariants,
-  getCvPaymentAgreementVariants,
   getPaymentMethodDisagreeVariants,
   getReconsiderPaymentMethodVariants,
+  getPaymentProofDisagreeVariants,
+  getReconsiderPaymentProofVariants,
+  getUpdateFallbackVariants,
   getMissingEducationDetailsVariants,
   getMissingCertificationsDetailsVariants,
   getMissingExperienceExtrasDetailsVariants,
@@ -811,8 +825,13 @@ module.exports = {
   getSkipExperienceExtrasVariants,
   getSkipRefereesVariants,
   getSkipLanguagesVariants,
-  getPaymentProofAcknowledgementVariants,
-  getPaymentReminderLeadInVariants,
-  chargeTable,
-  getCategoryCharges
+  getDefaultFallbackVariants,             // newly added
+  getReconsiderFallbackVariants,          // newly added
+  getSkipEmploymentVariants,              // newly added
+  getCoverLetterAgreementVariants,        // newly added
+  getCoverLetterReconsiderPromptVariants, // newly added
+  getPaymentProofAcknowledgementVariants, // newly added
+  getPaymentReminderLeadInVariants,       // newly added
+  chargeTable,                            // actual table object
+  getCategoryCharges                      // helper function
 };

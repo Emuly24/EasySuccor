@@ -803,7 +803,7 @@ default:
       { name: `${session}/contexts/reconsider_fallback`, lifespanCount: 3 }
     ]
   });
-	}
+}
 // Error handling
 } catch (error) {
   console.error("Webhook error:", error.message);
