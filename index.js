@@ -219,44 +219,41 @@ function handleReconsider(params, session, restartContext, restartMessage) {
     };
   }
 }
+try {
+  switch (intentType) {
+    // === Greeting ===
+    case "Greeting":
+      const greetingBlock = getVariant("greeting", params).greeting || [];
+      const chosenGreeting = greetingBlock.length > 0
+        ? greetingBlock[Math.floor(Math.random() * greetingBlock.length)]
+        : "Welcome to EasySuccor!";
+      return res.json({
+        fulfillmentMessages: [
+          { text: { text: [leadIn] } },
+          { text: { text: [chosenGreeting] } }
+        ],
+        outputContexts: [
+          { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
+        ]
+      });
 
-// === Greeting ===
-const greetingBlock = getVariant("greeting", params).greeting || [];
-const chosenGreeting = greetingBlock.length > 0
-  ? greetingBlock[Math.floor(Math.random() * greetingBlock.length)]
-  : "Welcome to EasySuccor!";
-return res.json({
-  fulfillmentMessages: [
-    { text: { text: [leadIn] } },
-    { text: { text: [chosenGreeting] } }
-  ],
-  outputContexts: [
-    { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
-  ]
-});
+    // === CV Category ===
+    case "CV_Category":
+      const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
+      const category = categoryRaw ? categoryRaw.toLowerCase() : "";
+      const categoryLine = getVariant("category", { category });
+      const chargesList = getCategoryCharges(category);
 
-
-
-// === CV Category ===
-case "CV_Category":
-  const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
-  const category = categoryRaw ? categoryRaw.toLowerCase() : "";
-
-  const categoryLine = getVariant("category", { category });
-  const chargesList = getCategoryCharges(category);
-
-  return res.json({
-    fulfillmentMessages: [
-      { text: { text: [categoryLine] } },
-      { text: { text: [`Here are your charges: ${chargesList}`] } },
-      { text: { text: ["Please select the service you’d like (New CV, Editable CV, CV Update, or Cover Letter)."] } }
-    ],
-    outputContexts: [
-      { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 3 } // <-- changed
-    ]
-  });
-
-
+      return res.json({
+        fulfillmentMessages: [
+          { text: { text: [categoryLine] } },
+          { text: { text: [`Here are your charges: ${chargesList}`] } },
+          { text: { text: ["Please select the service you’d like (New CV, Editable CV, CV Update, or Cover Letter)."] } }
+        ],
+        outputContexts: [
+          { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 3 }
+        ]
+      });
 
 // === CV Service Selection ===
 case "CV_ServiceSelection":
