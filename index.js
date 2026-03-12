@@ -259,18 +259,13 @@ app.post("/webhook", (req, res) => {
   switch (intent) {
 // === Greeting ===
   case "Greeting": {
-  // Pick a random lead-in
   const leadIn = getGreetingLeadInVariants();
-
-  // Pick a random greeting block (includes category list)
   const greetingBlock = getGreetingVariants();
-
-  // Combine them into one array of strings
   const chosenGreeting = [leadIn, ...greetingBlock];
 
   return res.json({
     fulfillmentMessages: [
-      { text: { text: chosenGreeting } }
+      { text: { text: chosenGreeting } } // each element becomes a separate bubble
     ],
     outputContexts: [
       { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
@@ -278,25 +273,28 @@ app.post("/webhook", (req, res) => {
   });
 }
 
+  case "CV_Category": {
+  const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
+  const category = categoryRaw ? categoryRaw.toLowerCase() : "";
 
+  // Call the master variants helper
+  const categoryLine = getCategoryVariants({ category });
 
-    // === CV Category ===
-    case "CV_Category":
-      const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
-      const category = categoryRaw ? categoryRaw.toLowerCase() : "";
-      const categoryLine = getVariant("category", { category });
-      const cvChargesList = getCategoryCharges(category);
+  // Charges logic
+  const cvChargesList = getCategoryCharges(category);
 
-      return res.json({
-        fulfillmentMessages: [
-          { text: { text: [categoryLine] } },
-          { text: { text: [`Here are your charges: ${cvChargesList}`] } },
-          { text: { text: ["Please select the service you’d like (New CV, Editable CV, CV Update, or Cover Letter)."] } }
-        ],
-        outputContexts: [
-          { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 3 }
-        ]
-      });
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: [categoryLine] } },
+      { text: { text: [`Here are your charges: ${cvChargesList}`] } },
+      { text: { text: ["Please select the service you’d like (New CV, Editable CV, CV Update, or Cover Letter)."] } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_service_selection`, lifespanCount: 3 }
+    ]
+  });
+}
+
 
 // === CV Service Selection ===
 case "CV_ServiceSelection":
