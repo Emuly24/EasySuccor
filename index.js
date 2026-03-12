@@ -273,7 +273,7 @@ app.post("/webhook", (req, res) => {
   });
 }
 
-  case "CV_Category": {
+  case "cv_category": {
   const categoryRaw = Array.isArray(params.category) ? params.category[0] : params.category;
   const category = categoryRaw ? categoryRaw.toLowerCase() : "";
 
