@@ -257,20 +257,28 @@ app.post("/webhook", (req, res) => {
     const session = body.session;
 
   switch (intent) {
-    // === Greeting ===
-    case "Greeting":
-      const greetingBlock = getVariant("greeting", params).greeting || [];
-      const chosenGreeting = greetingBlock.length > 0
-        ? greetingBlock[Math.floor(Math.random() * greetingBlock.length)]
-        : "Welcome to EasySuccor!";
-      return res.json({
-        fulfillmentMessages: [
-          { text: { text: [chosenGreeting] } }
-        ],
-        outputContexts: [
-          { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
-        ]
-      });
+// === Greeting ===
+  case "Greeting": {
+  // Pick a random lead-in
+  const leadIn = getGreetingLeadInVariants();
+
+  // Pick a random greeting block (includes category list)
+  const greetingBlock = getGreetingVariants();
+
+  // Combine them into one array of strings
+  const chosenGreeting = [leadIn, ...greetingBlock];
+
+  return res.json({
+    fulfillmentMessages: [
+      { text: { text: chosenGreeting } }
+    ],
+    outputContexts: [
+      { name: `${session}/contexts/awaiting_cv_category`, lifespanCount: 3 }
+    ]
+  });
+}
+
+
 
     // === CV Category ===
     case "CV_Category":
